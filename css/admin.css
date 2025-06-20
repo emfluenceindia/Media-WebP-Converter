@@ -1,0 +1,64 @@
+/**
+Version: 1.0.3
+*/
+#wpmwc-progress-bar {
+    width: 100%;
+    background: #eee;
+    border: 1px solid #ccc;
+    height: 40px;
+    margin-top: 15px;
+    box-sizing: border-box;
+}
+
+#wpmwc-progress-inner {
+    width: 0%;
+    height: 100%;
+    background: #35cf21;
+    transition: width 0.3s ease-in-out;
+}
+
+/** Plugin settings page table classes */
+.wpmwc-table-default {
+    width: 50%;
+    margin: 15px 0 25px 0;
+}
+
+.wpmwc-table-default th {
+    background: #708060;
+    color: #ffffff;
+    padding: 8px;
+}
+
+.wpmwc-table-default th.left {
+    border-right: 1px solid #fafafe
+}
+
+.wpmwc-table-default td {
+    background: #fafafe;
+    padding: 8px;
+    border-bottom: 1px solid #708060;
+    border-right: 1px solid #708060;
+}
+
+.wpmwc-table-default td.left {
+    border-left: 1px solid #708060;
+}
+
+.wpmwc-form-default {
+    margin-top: 25px;
+}
+
+/** Action table */
+.wpwmc-action-table {
+    width: 50%;
+    border: 0;
+}
+
+.wpwmc-action-table td {
+    padding: 6px;
+}
+
+.wpwmc-action-table td.option {
+    width: 80%;
+}
+
