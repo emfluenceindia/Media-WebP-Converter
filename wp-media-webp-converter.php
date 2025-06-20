@@ -133,22 +133,14 @@ function wpmwc_count_images_by_mime_types() {
  */
 function wpmwc_display_image_counts_by_mime_type() {
 
-    $source_file_path = get_attached_file( 21 );
-    $path_info = pathinfo( $source_file_path );
-    $webp_filename = $path_info[ 'filename' ] . '.webp';
-    var_dump( $path_info );
-    var_dump(wp_upload_dir()['url'] . '/' . $webp_filename);
+    /** For debuggin. Remove on production */
+    // $source_file_path = get_attached_file( 21 );
+    // $path_info = pathinfo( $source_file_path );
+    // $webp_filename = $path_info[ 'filename' ] . '.webp';
+    // var_dump( $path_info );
+    // var_dump(wp_upload_dir()['url'] . '/' . $webp_filename);
+    /** */
     
-
-    // $upload_dir = wp_upload_dir();
-    // $webp_url = str_replace( $upload_dir[ 'basedir' ], $upload_dir[ 'url' ], $webp_file  );
-    //$webp_path = basename( $source_file_path ) . '.webp';
-    //$webp_path = pathinfo( $source_file_path );
-    //var_dump( $webp_path );
-    // var_dump( wp_upload_dir()['basedir'] );
-    // var_dump( basename( $source_file_path ) );
-    //var_dump( wp_upload_dir()['url'] . '/' . $webp_file );
-
     $counts = wpmwc_count_images_by_mime_types(); ?>
     <div class="wrap">
         <h2><?php echo __( 'Image count by MIME types', 'wp-media-webp-converter' ) ?></h2>
@@ -197,9 +189,9 @@ function wpmwc_render_settings_page() { ?>
                         <td class="option">
                             <select id="image_quality" name="image_quality">
                                 <option value=""><?php echo __( '-- Select --', 'wp-media-webp-converter' ); ?></option>    
-                                <option value="100"> <?php echo __( 'Maximum', 'wp-media-webp-converter' ); ?> </option>
-                                <option value="75"><?php echo __( 'Good', 'wp-media-webp-converter' ) ?></option>
-                                <option value="50"><?php echo __( 'Medium', 'wp-media-webp-converter' ) ?></option>
+                                <option value="100"> <?php echo __( 'Maximum (larger than source file)', 'wp-media-webp-converter' ); ?> </option>
+                                <option value="75"><?php echo __( 'Optimized', 'wp-media-webp-converter' ) ?></option>
+                                <option value="50"><?php echo __( 'Good', 'wp-media-webp-converter' ) ?></option>
                             </select>
                         </td>
                     </tr>
@@ -219,11 +211,11 @@ function wpmwc_render_settings_page() { ?>
                         <td>&nbsp;</td>    
                         <td class="option">
                             <div>
-                                <?php echo __( '<b>Convert Only</b> converts the image to WebP and stores the newly created file in the same folder. They are not available on the WordPress Media Library; however, they are available physically inside the folder.' , 'wp-media-webp-converter' ); ?>
+                                <?php echo __( '<b>Convert Only</b> <span>converts the image to WebP and stores the newly created file in the same folder. They are not available on the WordPress Media Library; however, they reside inside the folder.</span>' , 'wp-media-webp-converter' ); ?>
                             </div>
                             <hr />
                             <div>
-                                <?php echo __( '<b>Create New Attachment</b> does the same thing as Convert Only, but additionally creates a new attachment at the same time to make it immediately available on the WordPress Media Library page.' , 'wp-media-webp-converter' ); ?>
+                                <?php echo __( '<b>Convert & Create New Attachment</b> <span>does the same thing as Convert Only, but additionally creates a new attachment at the same time to make it immediately available in the WordPress Media Library.</span>' , 'wp-media-webp-converter' ); ?>
                             </div>
                         </td>
                     </tr>
