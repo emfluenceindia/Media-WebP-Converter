@@ -132,6 +132,23 @@ function wpmwc_count_images_by_mime_types() {
  * Display image counts by MIME types
  */
 function wpmwc_display_image_counts_by_mime_type() {
+
+    $source_file_path = get_attached_file( 21 );
+    $path_info = pathinfo( $source_file_path );
+    $webp_filename = $path_info[ 'filename' ] . '.webp';
+    var_dump( $path_info );
+    var_dump(wp_upload_dir()['url'] . '/' . $webp_filename);
+    
+
+    // $upload_dir = wp_upload_dir();
+    // $webp_url = str_replace( $upload_dir[ 'basedir' ], $upload_dir[ 'url' ], $webp_file  );
+    //$webp_path = basename( $source_file_path ) . '.webp';
+    //$webp_path = pathinfo( $source_file_path );
+    //var_dump( $webp_path );
+    // var_dump( wp_upload_dir()['basedir'] );
+    // var_dump( basename( $source_file_path ) );
+    //var_dump( wp_upload_dir()['url'] . '/' . $webp_file );
+
     $counts = wpmwc_count_images_by_mime_types(); ?>
     <div class="wrap">
         <h2><?php echo __( 'Image count by MIME types', 'wp-media-webp-converter' ) ?></h2>
@@ -194,7 +211,7 @@ function wpmwc_render_settings_page() { ?>
                             <select id="conversion_mode" name="conversion_mode">
                                 <option value=""><?php echo __( '-- Select --', 'wp-media-webp-converter' ); ?></option>
                                 <option value="none"><?php echo __( 'Convert Only', 'wp-media-webp-converter' ) ?></option>
-                                <option value="new"> <?php echo __( 'Create New Attachment', 'wp-media-webp-converter' ); ?> </option>
+                                <option value="new"> <?php echo __( 'Convert & Create New Attachment', 'wp-media-webp-converter' ); ?> </option>
                             </select>
                         </td>
                     </tr>
@@ -255,13 +272,26 @@ function wpmwc_convert_individual_image() {
     check_ajax_referer( 'wpmwc_nonce', 'nonce' );
 
     $id             = intval($_POST['id']);
-    //$overwrite      = isset( $_POST[ 'overwrite' ] ) ? (bool)$_POST[ 'overwrite' ] : false;
     $overwrite      = isset( $_POST[ 'overwrite' ] ) ? (bool)$_POST[ 'overwrite' ] : false;
-    // $quality      = isset( $_POST[ 'maxqual' ] ) ? 100 : 80;
     $quality        = isset( $_POST[ 'image_quality' ] ) ? intval( $_POST[ 'image_quality' ] ) : 100;
     $action_mode    = isset( $_POST[ 'conversion_mode' ] ) ? $_POST[ 'conversion_mode' ] : 'none';
     $file           = get_attached_file( $id );
     $info           = pathinfo( $file );
+
+
+    /***** For debug. Remove on production */
+
+    // $id             = intval($_REQUEST['id']);
+    // $overwrite      = isset( $_REQUEST[ 'overwrite' ] ) ? (bool)$_REQUEST[ 'overwrite' ] : false;
+    // $quality        = isset( $_REQUEST[ 'image_quality' ] ) ? intval( $_REQUEST[ 'image_quality' ] ) : 100;
+    // $action_mode    = isset( $_REQUEST[ 'conversion_mode' ] ) ? $_REQUEST[ 'conversion_mode' ] : 'none';
+    // $file           = get_attached_file( $id );
+    // $info           = pathinfo( $file );
+
+    //var_dump( $file );
+    //die();
+
+    /** */
 
     $metadata       = wp_get_attachment_metadata( $id );
     $thumb_sizes    = $metadata[ 'sizes' ];
@@ -277,11 +307,11 @@ function wpmwc_convert_individual_image() {
     $mime_type =  trim( strtolower( $file_info[ 'mime' ] ) );
 
     if( $mime_type === 'image/jpeg' ) {
-        wpmwc_convert_jpeg_to_webp( $thumb_files, $overwrite, $quality, $action_mode );
+        wpmwc_convert_jpeg_to_webp( $file, $thumb_files, $overwrite, $quality, $action_mode );
     } else if( $mime_type === 'image/png') {
-        wpmwc_convert_png_to_webp( $thumb_files, $overwrite, $quality, $action_mode );
+        wpmwc_convert_png_to_webp( $file, $thumb_files, $overwrite, $quality, $action_mode );
     } else if( $mime_type === 'image/gif' ) {
-        wpmwc_convert_gif_to_webp( $thumb_files, $overwrite, $quality, $action_mode );
+        wpmwc_convert_gif_to_webp( $file, $thumb_files, $overwrite, $quality, $action_mode );
     }
 
     //die();
