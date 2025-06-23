@@ -166,9 +166,9 @@ function wpmwc_display_image_counts_by_mime_type() {
 
 function wpmwc_render_settings_page() { ?>
     <div class="wrap">
-        <h1><?php echo __( 'Convert images to WebP in Bulk', 'wp-media-webp-converter' ); ?></h1>
+        <h1><?php echo __( 'Convert images in Media Library to WebP in Bulk', 'wp-media-webp-converter' ); ?></h1>
         <hr />
-        <p><strong><?php echo __( 'Convert all JPEG/PNG/GIF images in the media library to WebP format (lossless).', 'wp-media-webp-converter' ); ?></strong></p>
+        <p><?php echo __( 'Convert JPEG, PNG and GIF images in WebP format in bulk. You can also choose to Create New Attachment at the same time.', 'wp-media-webp-converter' ); ?></p>
         <?php wpmwc_display_image_counts_by_mime_type(); ?>
         <form method="post" class="wpmwc-form-default">
             <div style="margin-top: 10px;">
@@ -183,16 +183,24 @@ function wpmwc_render_settings_page() { ?>
                         </td>
                     </tr>
                     <tr>
+                        <td>&nbsp;</td>
+                        <td>
+                            <span><?php echo __( 'When <strong>Overwrite</strong> and <strong>Convert & Create New Attachment</strong> options are selected at the same time, a New Attachment will only be created if it doesn\'t exist already.', 'wp-media-webp-converter' ); ?></span>
+                        </td>
+                    </tr>
+                    <tr>
                         <td>
                             <?php echo __( 'Image quality: ', 'wp-media-webp-converter' ); ?>
                         </td>
                         <td class="option">
                             <select id="image_quality" name="image_quality">
                                 <option value=""><?php echo __( '-- Select --', 'wp-media-webp-converter' ); ?></option>    
-                                <option value="100"> <?php echo __( 'Maximum (larger than source file)', 'wp-media-webp-converter' ); ?> </option>
+                                <option value="100"> <?php echo __( 'Maximum', 'wp-media-webp-converter' ); ?> </option>
                                 <option value="75"><?php echo __( 'Optimized', 'wp-media-webp-converter' ) ?></option>
-                                <option value="50"><?php echo __( 'Good', 'wp-media-webp-converter' ) ?></option>
+                                <option value="50"><?php echo __( 'Medium', 'wp-media-webp-converter' ) ?></option>
+                                <option value="30"><?php echo __( 'Low', 'wp-media-webp-converter' ) ?></option>
                             </select>
+                            &nbsp; <span><?php echo __( '<strong>Maximum</strong> makes WebP file larger than source file.', 'wp-media-webp-converter' ); ?></span>
                         </td>
                     </tr>
                     <tr>
