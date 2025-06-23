@@ -181,14 +181,14 @@ function wpmwc_convert_gif_to_webp( $source_file_path, $thumb_files, $overwrite,
  * @param string $source_file_path. The full path of the original attachment file
  */
 function wpmwc_create_new_attachment( $source_file_path ) {
-    $path_info = pathinfo( $source_file_path );
-    $webp_filename = $path_info[ 'filename' ] . '.webp';
-    $webp_url = wp_upload_dir()['url'] . '/' . $webp_filename;
-    
-    $attachmet_arg = array(
+    $path_info      = pathinfo( $source_file_path );
+    $webp_filename  = $path_info[ 'filename' ] . '.webp';
+    $webp_url       = wp_upload_dir()['url'] . '/' . $webp_filename;
+
+    $attachmet_arg  = array(
         'guid'           => $webp_url,
         'post_mime_type' => 'image/webp',
-        'post_title'     => sanitize_file_name( basename( $webp_url ) ),
+        'post_title'     => sanitize_file_name( $path_info[ 'filename' ] ),
         'post_content'   => '',
         'post_status'    => 'inherit'
     );
