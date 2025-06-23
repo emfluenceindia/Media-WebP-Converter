@@ -124,7 +124,7 @@ function wpmwc_convert_png_to_webp( $source_file_path, $thumb_files, $overwrite,
  * @param array $thumb_files. The string array of file paths.
  * @param bool $overwrite. Decides whether or not to overwrite any existing WebP file
  */
-function wpmwc_convert_gif_to_webp( $org_attachment_id, $thumb_files, $overwrite, $quality, $action_mode ) {
+function wpmwc_convert_gif_to_webp( $source_file_path, $thumb_files, $overwrite, $quality, $action_mode ) {
     if( ! function_exists('imagewebp' ) ) {
         wp_send_json_error( 'WebP is not supported' );
     }
@@ -142,6 +142,10 @@ function wpmwc_convert_gif_to_webp( $org_attachment_id, $thumb_files, $overwrite
         } else {
             try {
                 $img = imagecreatefromgif( $thumb );
+                imagepalettetotruecolor( $img );
+                imagealphablending( $img, true );
+                imagesavealpha( $img, true );
+
                 $result = imagewebp( $img, $webp_save_path, $quality );
                 $converted++;
             } catch ( Exception $ex ) {
@@ -151,6 +155,10 @@ function wpmwc_convert_gif_to_webp( $org_attachment_id, $thumb_files, $overwrite
         }
 
         imagedestroy( $img );
+    }
+
+    if( $action_mode === 'new' ) { // Create new attachment and metadata for newly created WebP
+        wpmwc_create_new_attachment( $source_file_path );
     }
 
     $summary = array(
@@ -163,7 +171,7 @@ function wpmwc_convert_gif_to_webp( $org_attachment_id, $thumb_files, $overwrite
         ),
     );
 
-    $output = json_encode( $summary, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES );
+    $output = json_encode( $summary );
 
     echo $output;
 }

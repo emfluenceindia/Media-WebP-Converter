@@ -111,7 +111,7 @@ function wpmwc_count_images_by_mime_types() {
         'image/jpeg'    => 'JPEG',
         'image/png'     => 'PNG',
         'image/gif'     => 'GIF',
-        'image/svg+xml' => 'SVG'
+        //'image/svg+xml' => 'SVG'
     );
 
     $counts = array();
@@ -271,7 +271,7 @@ function wpmwc_convert_individual_image() {
     $info           = pathinfo( $file );
 
 
-    /***** For debug. Remove on production */
+    // /***** For debug. Remove on production */
 
     // $id             = intval($_REQUEST['id']);
     // $overwrite      = isset( $_REQUEST[ 'overwrite' ] ) ? (bool)$_REQUEST[ 'overwrite' ] : false;
@@ -281,6 +281,8 @@ function wpmwc_convert_individual_image() {
     // $info           = pathinfo( $file );
 
     // var_dump( $file );
+    // echo '<hr />';
+
     // die();
 
     /** */
@@ -297,6 +299,12 @@ function wpmwc_convert_individual_image() {
 
     $file_info = getimagesize( $file );
     $mime_type =  trim( strtolower( $file_info[ 'mime' ] ) );
+
+    /******************** */
+    // var_dump( $file_info );
+    // echo '<hr />';
+    // var_dump( $mime_type );
+    /******************** */
 
     if( $mime_type === 'image/jpeg' ) {
         wpmwc_convert_jpeg_to_webp( $file, $thumb_files, $overwrite, $quality, $action_mode );
