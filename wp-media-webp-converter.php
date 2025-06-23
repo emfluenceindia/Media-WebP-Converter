@@ -11,7 +11,7 @@
  * Method Prefix: wpmwc_
  * 
  * ********************** TEST ***********************************************
- * Sample call: https://techblog.lndo.site/wp-admin/admin-ajax.php?action=wpmwc_convert_individual_image&nonce=123456&id=10
+ * Sample call: https://techblog.lndo.site/wp-admin/admin-ajax.php?action=wpmwc_convert_individual_image&nonce=123456&id=10&overwrite=false&image_quality=50&conversion_mode=new
  * Change _GET to _POST
  * Uncomment chack_ajax_referrer
  */
@@ -280,8 +280,8 @@ function wpmwc_convert_individual_image() {
     // $file           = get_attached_file( $id );
     // $info           = pathinfo( $file );
 
-    //var_dump( $file );
-    //die();
+    // var_dump( $file );
+    // die();
 
     /** */
 

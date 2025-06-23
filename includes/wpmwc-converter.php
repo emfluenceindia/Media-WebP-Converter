@@ -66,56 +66,7 @@ function wpmwc_convert_jpeg_to_webp( $source_file_path, $thumb_files, $overwrite
  * @param array $thumb_files. The string array of file paths.
  * @param bool $overwrite. Decides whether or not to overwrite any existing WebP file
  */
-function wpmwc_convert_gif_to_webp( $org_attachment_id, $thumb_files, $overwrite, $quality, $action_mode ) {
-    if( ! function_exists('imagewebp' ) ) {
-        wp_send_json_error( 'WebP is not supported' );
-    }
-
-    $converted = 0; $skipped = 0; $failed = 0;
-
-    foreach( $thumb_files as $thumb ) {
-        $path_info      = pathinfo( $thumb );
-        $file_name      = $path_info[ 'filename' ];
-        $webp_save_path = $path_info[ 'dirname' ] . '/' . $file_name . '.webp';
-
-        if( ! $overwrite && file_exists( $webp_save_path ) ) {
-            // wp_send_json_success( 'Already exists. Skipping...' );
-            $skipped++;
-        } else {
-            try {
-                $img = imagecreatefromgif( $thumb );
-                $result = imagewebp( $img, $webp_save_path, $quality );
-                $converted++;
-            } catch ( Exception $ex ) {
-                $failed++;
-                $ex->getMessage();
-            }
-        }
-
-        imagedestroy( $img );
-    }
-
-    $summary = array(
-        'status'  => 'Success',
-        'message' => 'Conversion process completed',
-        'summary' => array(
-            'converted' => $converted,
-            'skipped'   => $skipped,
-            'failed'    => $failed
-        ),
-    );
-
-    $output = json_encode( $summary, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES );
-
-    echo $output;
-}
-
-/**
- * Iterates the array, takes individual JPEG file path and conver them to WebP
- * @param array $thumb_files. The string array of file paths.
- * @param bool $overwrite. Decides whether or not to overwrite any existing WebP file
- */
-function wpmwc_convert_png_to_webp( $org_attachment_id, $thumb_files, $overwrite, $quality, $action_mode ) {
+function wpmwc_convert_png_to_webp( $source_file_path, $thumb_files, $overwrite, $quality, $action_mode ) {
     if( ! function_exists('imagewebp' ) ) {
         wp_send_json_error( 'WebP is not supported' );
     }
@@ -137,6 +88,60 @@ function wpmwc_convert_png_to_webp( $org_attachment_id, $thumb_files, $overwrite
                 imagealphablending( $img, true );
                 imagesavealpha( $img, true );
 
+                $result = imagewebp( $img, $webp_save_path, $quality );
+                $converted++;
+            } catch ( Exception $ex ) {
+                $failed++;
+                $ex->getMessage();
+            }
+        }
+
+        imagedestroy( $img );
+    }
+
+    if( $action_mode === 'new' ) { // Create new attachment and metadata for newly created WebP
+        wpmwc_create_new_attachment( $source_file_path );
+    }
+
+    $summary = array(
+        'status'  => 'Success',
+        'message' => 'Conversion process completed',
+        'summary' => array(
+            'converted' => $converted,
+            'skipped'   => $skipped,
+            'failed'    => $failed
+        ),
+    );
+
+    // $output = json_encode( $summary, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES );
+    $output = json_encode( $summary );
+
+    echo $output;
+}
+
+/**
+ * Iterates the array, takes individual JPEG file path and conver them to WebP
+ * @param array $thumb_files. The string array of file paths.
+ * @param bool $overwrite. Decides whether or not to overwrite any existing WebP file
+ */
+function wpmwc_convert_gif_to_webp( $org_attachment_id, $thumb_files, $overwrite, $quality, $action_mode ) {
+    if( ! function_exists('imagewebp' ) ) {
+        wp_send_json_error( 'WebP is not supported' );
+    }
+
+    $converted = 0; $skipped = 0; $failed = 0;
+
+    foreach( $thumb_files as $thumb ) {
+        $path_info      = pathinfo( $thumb );
+        $file_name      = $path_info[ 'filename' ];
+        $webp_save_path = $path_info[ 'dirname' ] . '/' . $file_name . '.webp';
+
+        if( ! $overwrite && file_exists( $webp_save_path ) ) {
+            // wp_send_json_success( 'Already exists. Skipping...' );
+            $skipped++;
+        } else {
+            try {
+                $img = imagecreatefromgif( $thumb );
                 $result = imagewebp( $img, $webp_save_path, $quality );
                 $converted++;
             } catch ( Exception $ex ) {
