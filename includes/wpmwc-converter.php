@@ -193,9 +193,13 @@ function wpmwc_create_new_attachment( $source_file_path ) {
         'post_status'    => 'inherit'
     );
 
-    // var_dump( $attachmet_arg );
-    // var_dump( $webp_url );
-    // die();
+    $existing_attachment_id = wpwmc_check_if_attachment_already_exists( $webp_url );
+    
+    /**
+     * Create a new attachment only if $existing_attachment_id = false.
+     * Skip otherwise.
+     */
+    if( $existing_attachment_id > 0 ) return;
 
     // Insert into the database
     $new_attachment_id = wp_insert_attachment( $attachmet_arg, $webp_url, 0 ); // 0 = Unattached. Replace with $post_id for association
@@ -204,4 +208,24 @@ function wpmwc_create_new_attachment( $source_file_path ) {
     require_once ABSPATH . 'wp-admin/includes/image.php';
     $new_attachment_data = wp_generate_attachment_metadata( $new_attachment_id, $webp_url );
     wp_update_attachment_metadata( $new_attachment_id, $new_attachment_data );
+}
+
+/**
+ * Check whether there is already an attachment existing.
+ * Create a new attachment if not, skip otherwise
+ * 
+ * @param string $filename. The name of the WebP file to check.
+ * @return int|bool. Returns attachment_id if exists, false otherwise.
+ */
+function wpwmc_check_if_attachment_already_exists( $filename ) {
+    global $wpdb;
+    $like  = '%' . $wpdb->esc_like( $filename );
+
+    $query = "SELECT post_id FROM $wpdb->postmeta 
+    WHERE meta_key = '_wp_attached_file' 
+    AND meta_value LIKE %s LIMIT 1";
+
+    $attachment_id = $wpdb->get_var( $wpdb->prepare( $query, $like ) );
+
+    return $attachment_id ? intval( $attachment_id ) : false;
 }

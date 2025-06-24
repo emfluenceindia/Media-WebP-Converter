@@ -179,7 +179,9 @@ function wpmwc_render_settings_page() { ?>
                         </td>
                         <td class="option">
                             <input type="checkbox" id="overwrite" name="overwrite" value="1" />
-                            <?php echo __( 'Overwrite existing WebP files', 'wp-media-webp-converter' ); ?>
+                            <label for="overwrite">
+                                <?php echo __( 'Overwrite existing WebP files', 'wp-media-webp-converter' ); ?>
+                            </label>
                         </td>
                     </tr>
                     <tr>
@@ -196,11 +198,11 @@ function wpmwc_render_settings_page() { ?>
                             <select id="image_quality" name="image_quality">
                                 <option value=""><?php echo __( '-- Select --', 'wp-media-webp-converter' ); ?></option>    
                                 <option value="100"> <?php echo __( 'Maximum', 'wp-media-webp-converter' ); ?> </option>
-                                <option value="75"><?php echo __( 'Optimized', 'wp-media-webp-converter' ) ?></option>
-                                <option value="50"><?php echo __( 'Medium', 'wp-media-webp-converter' ) ?></option>
+                                <option value="75"><?php echo __( 'Good', 'wp-media-webp-converter' ) ?></option>
+                                <option value="50"><?php echo __( 'Optimized (Recommended)', 'wp-media-webp-converter' ) ?></option>
                                 <option value="30"><?php echo __( 'Low', 'wp-media-webp-converter' ) ?></option>
                             </select>
-                            &nbsp; <span><?php echo __( '<strong>Maximum</strong> makes WebP file larger than source file.', 'wp-media-webp-converter' ); ?></span>
+                            &nbsp; <span><?php echo __( '<strong>Maximum</strong>: WebP file becomes larger.', 'wp-media-webp-converter' ); ?></span>
                         </td>
                     </tr>
                     <tr>
@@ -223,7 +225,7 @@ function wpmwc_render_settings_page() { ?>
                             </div>
                             <hr />
                             <div>
-                                <?php echo __( '<b>Convert & Create New Attachment</b> <span>does the same thing as Convert Only, but additionally creates a new attachment at the same time to make it immediately available in the WordPress Media Library.</span>' , 'wp-media-webp-converter' ); ?>
+                                <?php echo __( '<b>Convert & Create New Attachment</b> <span>does the same thing, but additionally creates a new media attachment at the same time, only if the same attachment does not already exist. The attachment will become available in the Media Library along with the source file.</span>' , 'wp-media-webp-converter' ); ?>
                             </div>
                         </td>
                     </tr>
@@ -269,24 +271,24 @@ add_action( 'wp_ajax_wpmwc_get_images', 'wpmwc_get_images' );
  * AJAX: Convert individual image to WebP
  */
 function wpmwc_convert_individual_image() {
-    check_ajax_referer( 'wpmwc_nonce', 'nonce' );
+    // check_ajax_referer( 'wpmwc_nonce', 'nonce' );
 
-    $id             = intval($_POST['id']);
-    $overwrite      = isset( $_POST[ 'overwrite' ] ) ? (bool)$_POST[ 'overwrite' ] : false;
-    $quality        = isset( $_POST[ 'image_quality' ] ) ? intval( $_POST[ 'image_quality' ] ) : 100;
-    $action_mode    = isset( $_POST[ 'conversion_mode' ] ) ? $_POST[ 'conversion_mode' ] : 'none';
-    $file           = get_attached_file( $id );
-    $info           = pathinfo( $file );
-
-
-    // /***** For debug. Remove on production */
-
-    // $id             = intval($_REQUEST['id']);
-    // $overwrite      = isset( $_REQUEST[ 'overwrite' ] ) ? (bool)$_REQUEST[ 'overwrite' ] : false;
-    // $quality        = isset( $_REQUEST[ 'image_quality' ] ) ? intval( $_REQUEST[ 'image_quality' ] ) : 100;
-    // $action_mode    = isset( $_REQUEST[ 'conversion_mode' ] ) ? $_REQUEST[ 'conversion_mode' ] : 'none';
+    // $id             = intval($_POST['id']);
+    // $overwrite      = isset( $_POST[ 'overwrite' ] ) ? (bool)$_POST[ 'overwrite' ] : false;
+    // $quality        = isset( $_POST[ 'image_quality' ] ) ? intval( $_POST[ 'image_quality' ] ) : 100;
+    // $action_mode    = isset( $_POST[ 'conversion_mode' ] ) ? $_POST[ 'conversion_mode' ] : 'none';
     // $file           = get_attached_file( $id );
     // $info           = pathinfo( $file );
+
+
+    /***** For debug. Remove on production */
+
+    $id             = intval($_REQUEST['id']);
+    $overwrite      = isset( $_REQUEST[ 'overwrite' ] ) ? (bool)$_REQUEST[ 'overwrite' ] : false;
+    $quality        = isset( $_REQUEST[ 'image_quality' ] ) ? intval( $_REQUEST[ 'image_quality' ] ) : 100;
+    $action_mode    = isset( $_REQUEST[ 'conversion_mode' ] ) ? $_REQUEST[ 'conversion_mode' ] : 'none';
+    $file           = get_attached_file( $id );
+    $info           = pathinfo( $file );
 
     // var_dump( $file );
     // echo '<hr />';
