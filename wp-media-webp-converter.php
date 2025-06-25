@@ -109,32 +109,89 @@ add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'wpmwc_add_plu
 
  function wpmwc_delete_file_from_disk( $attachment_id ) {
     $file_path = get_attached_file( $attachment_id );
-    
+
+    //echo $attachment_id;
+    //echo get_attached_file( $attachment_id );
+    //die();
+
     // Physical file absent
     if( ! $file_path || ! file_exists( $file_path ) ) {
-        return;
+        // return;
     }
 
     $info      = pathinfo( $file_path );
+    //print_r( $info );
+    //die();
     $basedir   = $info[ 'dirname' ];
     $basename  = $info[ 'filename' ];
+    $extension = $info[ 'extension' ];
     $webp_url  = wp_upload_dir()['url'] . '/' . $basename . '.webp'; // get the full virtual path
 
-    // First we remove the main .webp version (same name having .webp extension)
-    $webp_main = $basedir . '/' . $basename . '.webp'; // get the physical path on disk
+    //echo $extension;
 
-    // Check if this .webp is a separate attachment already
-    $webp_attachment_id = wpwmc_check_if_attachment_already_exists( $webp_url );
+    if( "webp" === strtolower( $extension ) ) {
+        /**
+         * Check for the physical existence of the file
+         * Get all attachment metadata and remove them from the disk
+         * Remove the main webp file from the disk
+         * Let's do it by calling a separate method initially
+         */
 
-    if( $webp_attachment_id > 0 ) return; // This is an attachment. Do not delete
+        $webp_main = $basedir . '/' . $basename . '.' . $extension;
+        echo $webp_main;
+        // die();
+        wpwmc_jump_delete_webp_file( $attachment_id, $basedir, $webp_main );
+        // return;
+    } else {
+        // First we remove the main .webp version (same name having .webp extension)
+        $webp_main = $basedir . '/' . $basename . '.webp'; // get the physical path on disk
+        echo $webp_main . '<hr />';
 
-    // Since the attachment is not found, it is safe to remove the file from the disk.
-    if( file_exists( $webp_main ) ) {
-        @unlink( $webp_main );
+        // Check if this .webp is a separate attachment already
+        $webp_attachment_id = wpwmc_check_if_attachment_already_exists( $webp_url );
+        echo $webp_attachment_id;
+        die();
+
+        if( $webp_attachment_id > 0 ) return; // This is an attachment. Do not delete
+
+        wpwmc_jump_delete_webp_file( $attachment_id, $basedir, $webp_main ); 
     }
 
+    // // First we remove the main .webp version (same name having .webp extension)
+    // $webp_main = $basedir . '/' . $basename . '.webp'; // get the physical path on disk
+
+    // // Check if this .webp is a separate attachment already
+    // $webp_attachment_id = wpwmc_check_if_attachment_already_exists( $webp_url );
+
+    // if( $webp_attachment_id > 0 ) return; // This is an attachment. Do not delete
+
+    // wpwmc_jump_delete_webp_file( $attachment_id, $basedir, $webp_main );
+
+    // Since there is no attachment, it is safe to remove the file phsycally.
+    // if( file_exists( $webp_main ) ) {
+    //     @unlink( $webp_main );
+    // }
+
     // Now we can remove the resized image files of the above WebP version we just deleted
+    // $meta = wp_get_attachment_metadata( $attachment_id );
+    // if( ! empty( $meta[ 'sizes' ] ) ) {
+    //     foreach( $meta['sizes'] as $size ) {
+    //         $size_filename = $basedir . '/' . pathinfo( $size['file'], PATHINFO_FILENAME ) . '.webp';
+    //         if( file_exists( $size_filename ) ) {
+    //             @unlink( $size_filename );
+    //         }
+    //     }
+    // }
+ }
+
+ add_action( 'delete_attachment', 'wpmwc_delete_file_from_disk' );
+
+ /**
+  * Remove webp files from the disk on attachment removal
+  */
+  function wpwmc_jump_delete_webp_file( $attachment_id, $basedir, $webp_physical_path ) {
     $meta = wp_get_attachment_metadata( $attachment_id );
+
     if( ! empty( $meta[ 'sizes' ] ) ) {
         foreach( $meta['sizes'] as $size ) {
             $size_filename = $basedir . '/' . pathinfo( $size['file'], PATHINFO_FILENAME ) . '.webp';
@@ -143,9 +200,11 @@ add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'wpmwc_add_plu
             }
         }
     }
- }
 
- add_action( 'delete_attachment', 'wpmwc_delete_file_from_disk' );
+    if( file_exists( $webp_physical_path ) ) {
+        @unlink( $webp_physical_path );
+    }
+  }
 
 /**
  * Fetch and count image files by MIME types
@@ -220,7 +279,7 @@ function wpmwc_render_settings_page() { ?>
     <div class="wrap">
         <h1><?php echo __( 'Convert images in Media Library to WebP in Bulk', 'wp-media-webp-converter' ); ?></h1>
         <hr />
-        <p><?php echo __( 'Convert JPEG, PNG and GIF images in WebP format in bulk. You can also choose to Create New Attachment at the same time.', 'wp-media-webp-converter' ); ?></p>
+        <p><?php echo __( 'Convert JPEG, PNG and GIF images in WebP format in bulk. You can choose <strong>Image Quality</strong> and/or <strong>Create New Attachment</strong> while converting.', 'wp-media-webp-converter' ); ?></p>
         <?php wpmwc_display_image_counts_by_mime_type(); ?>
         <form method="post" class="wpmwc-form-default">
             <div style="margin-top: 10px;">

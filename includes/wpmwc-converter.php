@@ -183,7 +183,8 @@ function wpmwc_convert_gif_to_webp( $source_file_path, $thumb_files, $overwrite,
 function wpmwc_create_new_attachment( $source_file_path ) {
     $path_info      = pathinfo( $source_file_path );
     $webp_filename  = $path_info[ 'filename' ] . '.webp';
-    $webp_url       = wp_upload_dir()['url'] . '/' . $webp_filename;
+    $webp_url       = wp_upload_dir()['url'] . '/' . $webp_filename; // URL
+    $webp_save_path = $path_info[ 'dirname' ] . '/' . $webp_filename; // Absolute path
 
     $attachmet_arg  = array(
         'guid'           => $webp_url,
@@ -202,11 +203,13 @@ function wpmwc_create_new_attachment( $source_file_path ) {
     if( $existing_attachment_id > 0 ) return;
 
     // Insert into the database
-    $new_attachment_id = wp_insert_attachment( $attachmet_arg, $webp_url, 0 ); // 0 = Unattached. Replace with $post_id for association
+    //$new_attachment_id = wp_insert_attachment( $attachmet_arg, $webp_url, 0 ); // 0 = Unattached. Replace with $post_id for association
+    $new_attachment_id = wp_insert_attachment( $attachmet_arg, $webp_save_path, 0 ); // 0 = Unattached. Replace with $post_id for association
 
     // Generate metadata
     require_once ABSPATH . 'wp-admin/includes/image.php';
-    $new_attachment_data = wp_generate_attachment_metadata( $new_attachment_id, $webp_url );
+    //$new_attachment_data = wp_generate_attachment_metadata( $new_attachment_id, $webp_url );
+    $new_attachment_data = wp_generate_attachment_metadata( $new_attachment_id, $webp_save_path );
     wp_update_attachment_metadata( $new_attachment_id, $new_attachment_data );
 }
 
@@ -220,6 +223,7 @@ function wpmwc_create_new_attachment( $source_file_path ) {
 function wpwmc_check_if_attachment_already_exists( $filename ) {
     global $wpdb;
     $like  = '%' . $wpdb->esc_like( $filename );
+    echo $like;
 
     $query = "SELECT post_id FROM $wpdb->postmeta 
     WHERE meta_key = '_wp_attached_file' 
