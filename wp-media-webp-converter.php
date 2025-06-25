@@ -55,14 +55,14 @@ function wpmwc_enqueue_scripts( $hook ) {
 
 add_action( 'admin_enqueue_scripts', 'wpmwc_enqueue_scripts' );
 
-add_action( 'admin_footer-upload.php', function() {
-    wp_enqueue_script( 
-        'upload-page-embed', // handle
-        plugin_dir_url( __FILE__ ) . 'js/upload-embed.js', // source
-        array( 'jquery' ),  // dependency
-        filemtime( plugin_dir_path( __FILE__ ) . 'js/upload-embed.js' )  // version
-    );
-} );
+// add_action( 'admin_footer-upload.php', function() {
+//     wp_enqueue_script( 
+//         'upload-page-embed', // handle
+//         plugin_dir_url( __FILE__ ) . 'js/upload-embed.js', // source
+//         array( 'jquery' ),  // dependency
+//         filemtime( plugin_dir_path( __FILE__ ) . 'js/upload-embed.js' )  // version
+//     );
+// } );
 
 /**
  * Add a plugin management / settigns page in the admin

@@ -9,28 +9,28 @@
 
 
 jQuery( document ).ready( function( $ ) {
-    $(document).on( 'click', 'wpmwc-convert-single', function( e ) {
-        e.preventDefault();
-        const el = $( this );
-        const id = el.data( 'id' );
-        el.text( 'Converting...' );
+    // $(document).on( 'click', 'wpmwc-convert-single', function( e ) {
+    //     e.preventDefault();
+    //     const el = $( this );
+    //     const id = el.data( 'id' );
+    //     el.text( 'Converting...' );
 
-        $.post( WPMC.ajaxUrl, {
-            action: 'wpmwc_convert_individual_image',
-            nonce: WPMC.nonce,
-            id: id,
-            overwrite: false,
-            image_quality: 80,
-            conversion_mode: 'new'
-        }, function ( res ) {
-            if( res.success ) {
-                el.text( '' );
-            } else {
-                el.text( '' );
-                alert( res.data );
-            }
-        } );
-    } );
+    //     $.post( WPMC.ajaxUrl, {
+    //         action: 'wpmwc_convert_individual_image',
+    //         nonce: WPMC.nonce,
+    //         id: id,
+    //         overwrite: false,
+    //         image_quality: 80,
+    //         conversion_mode: 'new'
+    //     }, function ( res ) {
+    //         if( res.success ) {
+    //             el.text( '' );
+    //         } else {
+    //             el.text( '' );
+    //             alert( res.data );
+    //         }
+    //     } );
+    // } );
 } );
 
 // add_action( 'admin_footer-upload.php', 'wpmwc_upload_script_embed' );
