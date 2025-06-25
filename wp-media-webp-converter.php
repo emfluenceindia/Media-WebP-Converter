@@ -102,6 +102,52 @@ function wpmwc_add_plugin_settings_links( $links ) {
 add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'wpmwc_add_plugin_settings_links' );
 
 /**
+  * WordPress does not automatically remove non-standard files like .webp.
+  * Hence we need to hook into the deletion process to manually remove these files
+  * physically from the disk whenever an attachment media is deleted from the media library
+ */
+
+ function wpmwc_delete_file_from_disk( $attachment_id ) {
+    $file_path = get_attached_file( $attachment_id );
+    
+    // Physical file absent
+    if( ! $file_path || ! file_exists( $file_path ) ) {
+        return;
+    }
+
+    $info      = pathinfo( $file_path );
+    $basedir   = $info[ 'dirname' ];
+    $basename  = $info[ 'filename' ];
+    $webp_url  = wp_upload_dir()['url'] . '/' . $basename . '.webp'; // get the full virtual path
+
+    // First we remove the main .webp version (same name having .webp extension)
+    $webp_main = $basedir . '/' . $basename . '.webp'; // get the physical path on disk
+
+    // Check if this .webp is a separate attachment already
+    $webp_attachment_id = wpwmc_check_if_attachment_already_exists( $webp_url );
+
+    if( $webp_attachment_id > 0 ) return; // This is an attachment. Do not delete
+
+    // Since the attachment is not found, it is safe to remove the file from the disk.
+    if( file_exists( $webp_main ) ) {
+        @unlink( $webp_main );
+    }
+
+    // Now we can remove the resized image files of the above WebP version we just deleted
+    $meta = wp_get_attachment_metadata( $attachment_id );
+    if( ! empty( $meta[ 'sizes' ] ) ) {
+        foreach( $meta['sizes'] as $size ) {
+            $size_filename = $basedir . '/' . pathinfo( $size['file'], PATHINFO_FILENAME ) . '.webp';
+            if( file_exists( $size_filename ) ) {
+                @unlink( $size_filename );
+            }
+        }
+    }
+ }
+
+ add_action( 'delete_attachment', 'wpmwc_delete_file_from_disk' );
+
+/**
  * Fetch and count image files by MIME types
  */
 function wpmwc_count_images_by_mime_types() {
@@ -143,7 +189,7 @@ function wpmwc_display_image_counts_by_mime_type() {
     
     $counts = wpmwc_count_images_by_mime_types(); ?>
     <div class="wrap">
-        <h2><?php echo __( 'Image count by MIME types', 'wp-media-webp-converter' ) ?></h2>
+        <h2><?php echo __( 'Image count by File types', 'wp-media-webp-converter' ) ?></h2>
         <table class="wpmwc-table-default" style="width: 50%;margin: 0;"  cellspacing=0 cellpadding=0>
             <tr>
                 <th class="left"><?php echo __( 'MIME Type', 'wp-media-webp-converter' ) ?></th>
@@ -151,7 +197,13 @@ function wpmwc_display_image_counts_by_mime_type() {
             </tr>
             <?php foreach( $counts as $type => $count ) { ?>
                 <tr>
-                    <td class="left"><?php echo $type; ?></td>
+                    <td class="left">
+                        <?php 
+                            if( 'JPEG' === strtoupper( $type ) ) $type = 'JPG/JPEG';
+                            if( 'GIF' === strtoupper( $type ) ) $type .= ' (Non-animated only)';
+                            echo $type;
+                        ?>
+                    </td>
                     <td><?php echo number_format_i18n( $count ); ?> files</td>
                 </tr>
             <?php } ?>
