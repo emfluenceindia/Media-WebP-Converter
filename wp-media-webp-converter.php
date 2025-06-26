@@ -110,24 +110,16 @@ add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'wpmwc_add_plu
  function wpmwc_delete_file_from_disk( $attachment_id ) {
     $file_path = get_attached_file( $attachment_id );
 
-    //echo $attachment_id;
-    //echo get_attached_file( $attachment_id );
-    //die();
-
     // Physical file absent
     if( ! $file_path || ! file_exists( $file_path ) ) {
         // return;
     }
 
     $info      = pathinfo( $file_path );
-    //print_r( $info );
-    //die();
     $basedir   = $info[ 'dirname' ];
     $basename  = $info[ 'filename' ];
     $extension = $info[ 'extension' ];
     $webp_url  = wp_upload_dir()['url'] . '/' . $basename . '.webp'; // get the full virtual path
-
-    //echo $extension;
 
     if( "webp" === strtolower( $extension ) ) {
         /**
@@ -138,50 +130,18 @@ add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'wpmwc_add_plu
          */
 
         $webp_main = $basedir . '/' . $basename . '.' . $extension;
-        echo $webp_main;
-        // die();
         wpwmc_jump_delete_webp_file( $attachment_id, $basedir, $webp_main );
-        // return;
     } else {
         // First we remove the main .webp version (same name having .webp extension)
         $webp_main = $basedir . '/' . $basename . '.webp'; // get the physical path on disk
-        echo $webp_main . '<hr />';
 
         // Check if this .webp is a separate attachment already
         $webp_attachment_id = wpwmc_check_if_attachment_already_exists( $webp_url );
-        echo $webp_attachment_id;
-        die();
 
         if( $webp_attachment_id > 0 ) return; // This is an attachment. Do not delete
 
         wpwmc_jump_delete_webp_file( $attachment_id, $basedir, $webp_main ); 
     }
-
-    // // First we remove the main .webp version (same name having .webp extension)
-    // $webp_main = $basedir . '/' . $basename . '.webp'; // get the physical path on disk
-
-    // // Check if this .webp is a separate attachment already
-    // $webp_attachment_id = wpwmc_check_if_attachment_already_exists( $webp_url );
-
-    // if( $webp_attachment_id > 0 ) return; // This is an attachment. Do not delete
-
-    // wpwmc_jump_delete_webp_file( $attachment_id, $basedir, $webp_main );
-
-    // Since there is no attachment, it is safe to remove the file phsycally.
-    // if( file_exists( $webp_main ) ) {
-    //     @unlink( $webp_main );
-    // }
-
-    // Now we can remove the resized image files of the above WebP version we just deleted
-    // $meta = wp_get_attachment_metadata( $attachment_id );
-    // if( ! empty( $meta[ 'sizes' ] ) ) {
-    //     foreach( $meta['sizes'] as $size ) {
-    //         $size_filename = $basedir . '/' . pathinfo( $size['file'], PATHINFO_FILENAME ) . '.webp';
-    //         if( file_exists( $size_filename ) ) {
-    //             @unlink( $size_filename );
-    //         }
-    //     }
-    // }
  }
 
  add_action( 'delete_attachment', 'wpmwc_delete_file_from_disk' );
@@ -237,18 +197,11 @@ function wpmwc_count_images_by_mime_types() {
  * Display image counts by MIME types
  */
 function wpmwc_display_image_counts_by_mime_type() {
-
-    /** For debuggin. Remove on production */
-    // $source_file_path = get_attached_file( 21 );
-    // $path_info = pathinfo( $source_file_path );
-    // $webp_filename = $path_info[ 'filename' ] . '.webp';
-    // var_dump( $path_info );
-    // var_dump(wp_upload_dir()['url'] . '/' . $webp_filename);
-    /** */
-    
     $counts = wpmwc_count_images_by_mime_types(); ?>
     <div class="wrap">
-        <?php echo wpwmc_check_if_attachment_already_exists( "/app/wp-content/uploads/2025/06/sanghai-night-scaled.webp" ) ?>
+        <?php 
+            $image_sizes = get_intermediate_image_sizes();
+        ?>
         <h2><?php echo __( 'Image count by File types', 'wp-media-webp-converter' ) ?></h2>
         <table class="wpmwc-table-default" style="width: 50%;margin: 0;"  cellspacing=0 cellpadding=0>
             <tr>
@@ -284,9 +237,9 @@ function wpmwc_render_settings_page() { ?>
         <?php wpmwc_display_image_counts_by_mime_type(); ?>
         <form method="post" class="wpmwc-form-default">
             <div style="margin-top: 10px;">
-                <table class="wpwmc-action-table">
+                <table class="wpwmc-action-table" cellspacing="0" cellpadding="0">
                     <tr>
-                        <td>
+                        <td class="left">
                             <?php wp_nonce_field( 'wpmwc_bulk_conversion_action', 'wpmwc_bulk_conversion_nonce' ); ?>
                         </td>
                         <td class="option">
@@ -297,20 +250,20 @@ function wpmwc_render_settings_page() { ?>
                         </td>
                     </tr>
                     <tr>
-                        <td>&nbsp;</td>
+                        <td class="left">&nbsp;</td>
                         <td>
                             <span><?php echo __( 'When <strong>Overwrite</strong> and <strong>Convert & Create New Attachment</strong> options are selected at the same time, a New Attachment will only be created if it doesn\'t exist already.', 'wp-media-webp-converter' ); ?></span>
                         </td>
                     </tr>
                     <tr>
-                        <td>
-                            <?php echo __( 'Image quality: ', 'wp-media-webp-converter' ); ?>
+                        <td class="left">
+                            <?php echo __( 'Image quality ', 'wp-media-webp-converter' ); ?>
                         </td>
                         <td class="option">
                             <select id="image_quality" name="image_quality">
                                 <option value=""><?php echo __( '-- Select --', 'wp-media-webp-converter' ); ?></option>    
                                 <option value="100"> <?php echo __( 'Maximum', 'wp-media-webp-converter' ); ?> </option>
-                                <option value="75"><?php echo __( 'Good', 'wp-media-webp-converter' ) ?></option>
+                                <option value="75"><?php echo __( 'High', 'wp-media-webp-converter' ) ?></option>
                                 <option value="50"><?php echo __( 'Optimized (Recommended)', 'wp-media-webp-converter' ) ?></option>
                                 <option value="30"><?php echo __( 'Low', 'wp-media-webp-converter' ) ?></option>
                             </select>
@@ -318,8 +271,8 @@ function wpmwc_render_settings_page() { ?>
                         </td>
                     </tr>
                     <tr>
-                        <td>
-                            <?php echo __( 'I want to ', 'wp-media-webp-converter' ); ?>
+                        <td class="left">
+                            <?php echo __( 'I want to', 'wp-media-webp-converter' ); ?>
                         </td>
                         <td class="option">
                             <select id="conversion_mode" name="conversion_mode">
@@ -330,7 +283,7 @@ function wpmwc_render_settings_page() { ?>
                         </td>
                     </tr>
                     <tr>
-                        <td>&nbsp;</td>    
+                        <td class="left">&nbsp;</td>
                         <td class="option">
                             <div>
                                 <?php echo __( '<b>Convert Only</b> <span>converts the image to WebP and stores the newly created file in the same folder. They are not available on the WordPress Media Library; however, they reside inside the folder.</span>' , 'wp-media-webp-converter' ); ?>
@@ -341,21 +294,31 @@ function wpmwc_render_settings_page() { ?>
                             </div>
                         </td>
                     </tr>
+                    <tr>
+                        <td class="left">&nbsp;</td>
+                        <td>
+                            <div>
+                                <button id="wpmwc-start" class="button button-primary">
+                                    <?php echo __( 'Start Conversion', 'wp-media-webp-converter' ); ?>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="left">&nbsp;</td>
+                        <td>
+                            <div id="wpmwc-progress-wrapper" style="display: none;margin-top: 20px;">
+                                <div id="wpmwc-progress-bar">
+                                    <div id="wpmwc-progress-inner"></div>
+                                </div>
+                                <div id="wpmwc-progress-status"  style="margin-top: 15px;">0%</div>
+                            </div>
+                            <div id="wpmwc-progress-log"></div>
+                        </td>
+                    </tr>
                 </table>
             </div>
-            <div style="margin-top: 30px;">
-                <button id="wpmwc-start" class="button button-primary">
-                    <?php echo __( 'Start Conversion', 'wp-media-webp-converter' ); ?>
-                </button>
-            </div>
         </form>
-        <div id="wpmwc-progress-wrapper" style="display: none;margin-top: 20px;">
-            <div id="wpmwc-progress-bar">
-                <div id="wpmwc-progress-inner"></div>
-            </div>
-            <div id="wpmwc-progress-status"  style="margin-top: 15px;">0%</div>
-        </div>
-        <div id="wpmwc-progress-log"></div>
     </div>
 <?php }
 
@@ -383,31 +346,24 @@ add_action( 'wp_ajax_wpmwc_get_images', 'wpmwc_get_images' );
  * AJAX: Convert individual image to WebP
  */
 function wpmwc_convert_individual_image() {
-    // check_ajax_referer( 'wpmwc_nonce', 'nonce' );
+    check_ajax_referer( 'wpmwc_nonce', 'nonce' );
 
-    // $id             = intval($_POST['id']);
-    // $overwrite      = isset( $_POST[ 'overwrite' ] ) ? (bool)$_POST[ 'overwrite' ] : false;
-    // $quality        = isset( $_POST[ 'image_quality' ] ) ? intval( $_POST[ 'image_quality' ] ) : 100;
-    // $action_mode    = isset( $_POST[ 'conversion_mode' ] ) ? $_POST[ 'conversion_mode' ] : 'none';
-    // $file           = get_attached_file( $id );
-    // $info           = pathinfo( $file );
+    $id             = intval($_POST['id']);
+    $overwrite      = isset( $_POST[ 'overwrite' ] ) ? (bool)$_POST[ 'overwrite' ] : false;
+    $quality        = isset( $_POST[ 'image_quality' ] ) ? intval( $_POST[ 'image_quality' ] ) : 100;
+    $action_mode    = isset( $_POST[ 'conversion_mode' ] ) ? $_POST[ 'conversion_mode' ] : 'none';
+    $file           = get_attached_file( $id );
+    $info           = pathinfo( $file );
 
 
     /***** For debug. Remove on production */
 
-    $id             = intval($_REQUEST['id']);
-    $overwrite      = isset( $_REQUEST[ 'overwrite' ] ) ? (bool)$_REQUEST[ 'overwrite' ] : false;
-    $quality        = isset( $_REQUEST[ 'image_quality' ] ) ? intval( $_REQUEST[ 'image_quality' ] ) : 100;
-    $action_mode    = isset( $_REQUEST[ 'conversion_mode' ] ) ? $_REQUEST[ 'conversion_mode' ] : 'none';
-    $file           = get_attached_file( $id );
-    $info           = pathinfo( $file );
-
-    // var_dump( $file );
-    // echo '<hr />';
-
-    // die();
-
-    /** */
+    // $id             = intval( $_REQUEST['id'] );
+    // $overwrite      = isset( $_REQUEST[ 'overwrite' ] ) ? (bool)$_REQUEST[ 'overwrite' ] : false;
+    // $quality        = isset( $_REQUEST[ 'image_quality' ] ) ? intval( $_REQUEST[ 'image_quality' ] ) : 100;
+    // $action_mode    = isset( $_REQUEST[ 'conversion_mode' ] ) ? $_REQUEST[ 'conversion_mode' ] : 'none';
+    // $file           = get_attached_file( $id );
+    // $info           = pathinfo( $file );
 
     $metadata       = wp_get_attachment_metadata( $id );
     $thumb_sizes    = $metadata[ 'sizes' ];
@@ -422,12 +378,6 @@ function wpmwc_convert_individual_image() {
     $file_info = getimagesize( $file );
     $mime_type =  trim( strtolower( $file_info[ 'mime' ] ) );
 
-    /******************** */
-    // var_dump( $file_info );
-    // echo '<hr />';
-    // var_dump( $mime_type );
-    /******************** */
-
     if( $mime_type === 'image/jpeg' ) {
         wpmwc_convert_jpeg_to_webp( $file, $thumb_files, $overwrite, $quality, $action_mode );
     } else if( $mime_type === 'image/png') {
@@ -435,8 +385,6 @@ function wpmwc_convert_individual_image() {
     } else if( $mime_type === 'image/gif' ) {
         wpmwc_convert_gif_to_webp( $file, $thumb_files, $overwrite, $quality, $action_mode );
     }
-
-    //die();
 
     // if( $result ) {
     //     wp_send_json_success( 'Image has been successfully converted to WebP' );

@@ -243,8 +243,6 @@ function wpwmc_check_if_attachment_already_exists( $filename ) {
         ),
     );
 
-    var_dump( $att_args );
-
     $attachments = get_posts( $att_args );
 
     if( ! empty( $attachments ) ) {
