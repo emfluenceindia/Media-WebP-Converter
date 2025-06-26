@@ -217,26 +217,35 @@ function wpmwc_create_new_attachment( $source_file_path ) {
  * Check whether there is already an attachment existing.
  * Create a new attachment if not, skip otherwise
  * 
+ * Regex pattern ('compare' => 'REGEXP') gives more flexibility
+ * over 'compare' => 'LIKE' or 'compare' => '=' while comparing
+ * 
+ * Other alternatives are:
+ * 'value' => $filename, 'compare' => 'LIKE'
+ * 'value' => $filename, 'compare' => '='
+ * 
  * @param string $filename. The name of the WebP file to check.
  * @return int|bool. Returns attachment_id if exists, false otherwise.
  */
 function wpwmc_check_if_attachment_already_exists( $filename ) {
-    global $wpdb;
-
     $filename = basename( $filename );
 
-    $attachments = get_posts( array(
+    $att_args = array(
         'post_type'   => 'attachment',
         'post_status' => 'inherit',
         'numberposts' => 1,
         'meta_query'  => array(
             array(
                 'key'     => '_wp_attached_file',
-                'value'   => $filename,
-                'compare' => 'LIKE'
+                'value'   =>  '^.*/' . $filename . '$',
+                'compare' => 'REGEXP'
             )
         ),
-    ) );
+    );
+
+    var_dump( $att_args );
+
+    $attachments = get_posts( $att_args );
 
     if( ! empty( $attachments ) ) {
         return $attachments[0]->ID;

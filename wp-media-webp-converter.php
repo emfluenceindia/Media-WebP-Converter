@@ -248,6 +248,7 @@ function wpmwc_display_image_counts_by_mime_type() {
     
     $counts = wpmwc_count_images_by_mime_types(); ?>
     <div class="wrap">
+        <?php echo wpwmc_check_if_attachment_already_exists( "/app/wp-content/uploads/2025/06/sanghai-night-scaled.webp" ) ?>
         <h2><?php echo __( 'Image count by File types', 'wp-media-webp-converter' ) ?></h2>
         <table class="wpmwc-table-default" style="width: 50%;margin: 0;"  cellspacing=0 cellpadding=0>
             <tr>
