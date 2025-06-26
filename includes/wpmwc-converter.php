@@ -222,14 +222,36 @@ function wpmwc_create_new_attachment( $source_file_path ) {
  */
 function wpwmc_check_if_attachment_already_exists( $filename ) {
     global $wpdb;
-    $like  = '%' . $wpdb->esc_like( $filename );
-    echo $like;
 
-    $query = "SELECT post_id FROM $wpdb->postmeta 
-    WHERE meta_key = '_wp_attached_file' 
-    AND meta_value LIKE %s LIMIT 1";
+    $filename = basename( $filename );
 
-    $attachment_id = $wpdb->get_var( $wpdb->prepare( $query, $like ) );
+    $attachments = get_posts( array(
+        'post_type'   => 'attachment',
+        'post_status' => 'inherit',
+        'numberposts' => 1,
+        'meta_query'  => array(
+            array(
+                'key'     => '_wp_attached_file',
+                'value'   => $filename,
+                'compare' => 'LIKE'
+            )
+        ),
+    ) );
 
-    return $attachment_id ? intval( $attachment_id ) : false;
+    if( ! empty( $attachments ) ) {
+        return $attachments[0]->ID;
+    }
+
+    return false;
+
+    // $like  = '%' . $wpdb->esc_like( $filename );
+    // echo $like;
+
+    // $query = "SELECT post_id FROM $wpdb->postmeta 
+    // WHERE meta_key = '_wp_attached_file' 
+    // AND meta_value LIKE %s LIMIT 1";
+
+    // $attachment_id = $wpdb->get_var( $wpdb->prepare( $query, $like ) );
+
+    // return $attachment_id ? intval( $attachment_id ) : false;
 }
