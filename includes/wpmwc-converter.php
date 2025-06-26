@@ -250,15 +250,4 @@ function wpwmc_check_if_attachment_already_exists( $filename ) {
     }
 
     return false;
-
-    // $like  = '%' . $wpdb->esc_like( $filename );
-    // echo $like;
-
-    // $query = "SELECT post_id FROM $wpdb->postmeta 
-    // WHERE meta_key = '_wp_attached_file' 
-    // AND meta_value LIKE %s LIMIT 1";
-
-    // $attachment_id = $wpdb->get_var( $wpdb->prepare( $query, $like ) );
-
-    // return $attachment_id ? intval( $attachment_id ) : false;
 }
