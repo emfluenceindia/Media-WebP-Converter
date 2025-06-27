@@ -25,10 +25,7 @@ if( is_admin() ) {
 /**
  * Enqueue admin scripts
  */
-function wpmwc_enqueue_scripts( $hook ) {
-    // Why I need this???
-    //if( ! in_array( $hook, ['tools_page_webp-converter', 'upload.php'] ) ) return;
-
+function wpmwc_enqueue_scripts() {
     // enqueue the script
     wp_enqueue_script( 
         'wpmwc-admin-script', // ID
@@ -54,15 +51,6 @@ function wpmwc_enqueue_scripts( $hook ) {
 }
 
 add_action( 'admin_enqueue_scripts', 'wpmwc_enqueue_scripts' );
-
-// add_action( 'admin_footer-upload.php', function() {
-//     wp_enqueue_script( 
-//         'upload-page-embed', // handle
-//         plugin_dir_url( __FILE__ ) . 'js/upload-embed.js', // source
-//         array( 'jquery' ),  // dependency
-//         filemtime( plugin_dir_path( __FILE__ ) . 'js/upload-embed.js' )  // version
-//     );
-// } );
 
 /**
  * Add a plugin management / settigns page in the admin
@@ -355,16 +343,6 @@ function wpmwc_convert_individual_image() {
     $file           = get_attached_file( $id );
     $info           = pathinfo( $file );
 
-
-    /***** For debug. Remove on production */
-
-    // $id             = intval( $_REQUEST['id'] );
-    // $overwrite      = isset( $_REQUEST[ 'overwrite' ] ) ? (bool)$_REQUEST[ 'overwrite' ] : false;
-    // $quality        = isset( $_REQUEST[ 'image_quality' ] ) ? intval( $_REQUEST[ 'image_quality' ] ) : 100;
-    // $action_mode    = isset( $_REQUEST[ 'conversion_mode' ] ) ? $_REQUEST[ 'conversion_mode' ] : 'none';
-    // $file           = get_attached_file( $id );
-    // $info           = pathinfo( $file );
-
     $metadata       = wp_get_attachment_metadata( $id );
     $thumb_sizes    = $metadata[ 'sizes' ];
     
@@ -385,12 +363,6 @@ function wpmwc_convert_individual_image() {
     } else if( $mime_type === 'image/gif' ) {
         wpmwc_convert_gif_to_webp( $file, $thumb_files, $overwrite, $quality, $action_mode );
     }
-
-    // if( $result ) {
-    //     wp_send_json_success( 'Image has been successfully converted to WebP' );
-    // } else {
-    //     wp_send_json_error( 'Operation failed.' );
-    // }
 }
 
 add_action( 'wp_ajax_wpmwc_convert_individual_image', 'wpmwc_convert_individual_image' );
