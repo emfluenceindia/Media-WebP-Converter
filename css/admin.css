@@ -49,25 +49,25 @@ Version: 1.0.3
 }
 
 /** Action table */
-.wpwmc-action-table {
+.wpmwc-action-table {
     width: 50%;
     border: 0;
 }
 
-.wpwmc-action-table td {
+.wpmwc-action-table td {
     padding: 6px;
 }
 
-.wpwmc-action-table td.left {
+.wpmwc-action-table td.left {
     text-align: right;
     padding-left:5px;
 }
 
-.wpwmc-action-table td.option {
+.wpmwc-action-table td.option {
     width: 80%;
 }
 
-.wpwmc-action-table td.option span {
+.wpmwc-action-table td.option span {
     color: gray;
 }
 

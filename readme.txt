@@ -1,4 +1,4 @@
-=== WP Image to WebP Converter ===
+=== WP Media WebP Converter ===
 Contributors: subrataemfluence
 Tags: webp, image optimization, media, performance, image converter
 Requires at least: 5.6
@@ -12,7 +12,7 @@ Converts all media images to WebP format with options to overwrite originals, co
 
 == Description ==
 
-**WP Image to WebP Converter** helps optimize your WordPress site performance by converting media library images to the modern, lightweight WebP format.
+**WP Media WebP Converter** helps optimize your WordPress site performance by converting media library images to the modern, lightweight WebP format.
 
 **Features:**
 

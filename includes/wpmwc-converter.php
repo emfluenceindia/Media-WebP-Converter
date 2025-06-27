@@ -194,7 +194,7 @@ function wpmwc_create_new_attachment( $source_file_path ) {
         'post_status'    => 'inherit'
     );
 
-    $existing_attachment_id = wpwmc_check_if_attachment_already_exists( $webp_url );
+    $existing_attachment_id = wpmwc_check_if_attachment_already_exists( $webp_url );
     
     /**
      * Create a new attachment only if $existing_attachment_id = false.
@@ -227,7 +227,7 @@ function wpmwc_create_new_attachment( $source_file_path ) {
  * @param string $filename. The name of the WebP file to check.
  * @return int|bool. Returns attachment_id if exists, false otherwise.
  */
-function wpwmc_check_if_attachment_already_exists( $filename ) {
+function wpmwc_check_if_attachment_already_exists( $filename ) {
     $filename = basename( $filename );
 
     $att_args = array(

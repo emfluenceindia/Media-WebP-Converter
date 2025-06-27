@@ -113,17 +113,17 @@ add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'wpmwc_add_plu
          */
 
         $webp_main = $basedir . '/' . $basename . '.' . $extension;
-        wpwmc_jump_delete_webp_file( $attachment_id, $basedir, $webp_main );
+        wpmwc_jump_delete_webp_file( $attachment_id, $basedir, $webp_main );
     } else {
         // First we remove the main .webp version (same name having .webp extension)
         $webp_main = $basedir . '/' . $basename . '.webp'; // get the physical path on disk
 
         // Check if this .webp is a separate attachment already
-        $webp_attachment_id = wpwmc_check_if_attachment_already_exists( $webp_url );
+        $webp_attachment_id = wpmwc_check_if_attachment_already_exists( $webp_url );
 
         if( $webp_attachment_id > 0 ) return; // This is an attachment. Do not delete
 
-        wpwmc_jump_delete_webp_file( $attachment_id, $basedir, $webp_main ); 
+        wpmwc_jump_delete_webp_file( $attachment_id, $basedir, $webp_main ); 
     }
  }
 
@@ -132,7 +132,7 @@ add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'wpmwc_add_plu
  /**
   * Remove webp files from the disk on attachment removal
   */
-  function wpwmc_jump_delete_webp_file( $attachment_id, $basedir, $webp_physical_path ) {
+  function wpmwc_jump_delete_webp_file( $attachment_id, $basedir, $webp_physical_path ) {
     $meta = wp_get_attachment_metadata( $attachment_id );
 
     if( ! empty( $meta[ 'sizes' ] ) ) {
@@ -220,7 +220,7 @@ function wpmwc_render_settings_page() { ?>
         <?php wpmwc_display_image_counts_by_mime_type(); ?>
         <form method="post" class="wpmwc-form-default">
             <div style="margin-top: 10px;">
-                <table class="wpwmc-action-table" cellspacing="0" cellpadding="0">
+                <table class="wpmwc-action-table" cellspacing="0" cellpadding="0">
                     <tr>
                         <td class="left">
                             <?php wp_nonce_field( 'wpmwc_bulk_conversion_action', 'wpmwc_bulk_conversion_nonce' ); ?>
