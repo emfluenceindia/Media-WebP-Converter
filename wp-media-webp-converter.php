@@ -137,16 +137,16 @@ add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'wpmwc_add_plu
     $meta = wp_get_attachment_metadata( $attachment_id );
 
     if( ! empty( $meta[ 'sizes' ] ) ) {
-        foreach( $meta['sizes'] as $size ) {
+        foreach( $meta[ 'sizes' ] as $size ) {
             $size_filename = $basedir . '/' . pathinfo( $size['file'], PATHINFO_FILENAME ) . '.webp';
             if( file_exists( $size_filename ) ) {
-                @unlink( $size_filename );
+                wp_delete_file( $size_filename );
             }
         }
     }
 
     if( file_exists( $webp_physical_path ) ) {
-        @unlink( $webp_physical_path );
+        wp_delete_file( $webp_physical_path );
     }
   }
 
@@ -160,18 +160,20 @@ function wpmwc_count_images_by_mime_types() {
         'image/jpeg'    => 'JPEG',
         'image/png'     => 'PNG',
         'image/gif'     => 'GIF',
-        //'image/svg+xml' => 'SVG'
     );
 
     $counts = array();
 
     foreach( $mime_types as $mime => $label ) {
-        $count = $wpdb->get_var(
-            $wpdb->prepare( "SELECT COUNT(*) FROM $wpdb->posts
-            WHERE post_type = 'attachment' AND post_mime_type = %s", $mime )
-        );
+        $attachments = get_posts(  array(
+            'post_type'      => 'attachment',
+            'post_mime_type' => $mime,
+            'post_status'    => 'inherit',
+            'posts_per_page' => -1,
+            'fields'         => 'ids', // Fetching a single field is enough to get the count.
+        ) );
 
-        $counts[ $label ] = $count;
+        $counts[ $mime ] = count( $attachments );
     }
 
     return $counts;
@@ -186,18 +188,19 @@ function wpmwc_display_image_counts_by_mime_type() {
         <?php 
             $image_sizes = get_intermediate_image_sizes();
         ?>
-        <h2><?php echo __( 'Image count by File types', 'wp-media-webp-converter' ) ?></h2>
+        <h2><?php echo esc_html__( 'Image count by File types', 'wp-media-webp-converter' ) ?></h2>
         <table class="wpmwc-table-default" style="width: 50%;margin: 0;"  cellspacing=0 cellpadding=0>
             <tr>
-                <th class="left"><?php echo __( 'MIME Type', 'wp-media-webp-converter' ) ?></th>
-                <th><?php echo __( 'Image count', 'wp-media-webp-converter' ) ?></th>
+                <th class="left"><?php echo esc_html__( 'MIME Type', 'wp-media-webp-converter' ) ?></th>
+                <th><?php echo esc_html__( 'Image count', 'wp-media-webp-converter' ) ?></th>
             </tr>
             <?php foreach( $counts as $type => $count ) { ?>
                 <tr>
                     <td class="left">
                         <?php 
-                            if( 'JPEG' === strtoupper( $type ) ) $type = 'JPG/JPEG';
-                            if( 'GIF' === strtoupper( $type ) ) $type .= ' (Non-animated only)';
+                            if( "image/jpeg" === strtolower( $type ) ) $type =  esc_html__( 'JPEG/JPG', 'wp-media-webp-converter' );
+                            if( "image/png" === strtolower( $type ) ) $type = esc_html__( 'PNG', 'wp-media-webp-converter' );
+                            if( "image/gif" === strtolower( $type ) ) $type = esc_html__( 'GIF (Non-animated only', 'wp-media-webp-converter' );
                             echo $type;
                         ?>
                     </td>
@@ -215,9 +218,9 @@ function wpmwc_display_image_counts_by_mime_type() {
 
 function wpmwc_render_settings_page() { ?>
     <div class="wrap">
-        <h1><?php echo __( 'Convert images in Media Library to WebP in Bulk', 'wp-media-webp-converter' ); ?></h1>
+        <h1><?php echo esc_html__( 'Convert images in Media Library to WebP in Bulk', 'wp-media-webp-converter' ); ?></h1>
         <hr />
-        <p><?php echo __( 'Convert JPEG, PNG and GIF images in WebP format in bulk. You can choose <strong>Image Quality</strong> and/or <strong>Create New Attachment</strong> while converting.', 'wp-media-webp-converter' ); ?></p>
+        <p><?php echo esc_html__( 'Convert JPEG, PNG and GIF images in WebP format in bulk. You can choose <strong>Image Quality</strong> and/or <strong>Create New Attachment</strong> while converting.', 'wp-media-webp-converter' ); ?></p>
         <?php wpmwc_display_image_counts_by_mime_type(); ?>
         <form method="post" class="wpmwc-form-default">
             <div style="margin-top: 10px;">
@@ -229,40 +232,40 @@ function wpmwc_render_settings_page() { ?>
                         <td class="option">
                             <input type="checkbox" id="overwrite" name="overwrite" value="1" />
                             <label for="overwrite">
-                                <?php echo __( 'Overwrite existing WebP files', 'wp-media-webp-converter' ); ?>
+                                <?php echo esc_html__( 'Overwrite existing WebP files', 'wp-media-webp-converter' ); ?>
                             </label>
                         </td>
                     </tr>
                     <tr>
                         <td class="left">&nbsp;</td>
                         <td>
-                            <span><?php echo __( 'When <strong>Overwrite</strong> and <strong>Convert & Create New Attachment</strong> options are selected at the same time, a New Attachment will only be created if it doesn\'t exist already.', 'wp-media-webp-converter' ); ?></span>
+                            <span><?php echo esc_html__( 'When <strong>Overwrite</strong> and <strong>Convert & Create New Attachment</strong> options are selected at the same time, a New Attachment will only be created if it doesn\'t exist already.', 'wp-media-webp-converter' ); ?></span>
                         </td>
                     </tr>
                     <tr>
                         <td class="left">
-                            <?php echo __( 'Image quality ', 'wp-media-webp-converter' ); ?>
+                            <?php echo esc_html__( 'Image quality ', 'wp-media-webp-converter' ); ?>
                         </td>
                         <td class="option">
                             <select id="image_quality" name="image_quality">
-                                <option value=""><?php echo __( '-- Select --', 'wp-media-webp-converter' ); ?></option>    
-                                <option value="100"> <?php echo __( 'Maximum', 'wp-media-webp-converter' ); ?> </option>
-                                <option value="75"><?php echo __( 'High', 'wp-media-webp-converter' ) ?></option>
-                                <option value="50"><?php echo __( 'Optimized (Recommended)', 'wp-media-webp-converter' ) ?></option>
-                                <option value="30"><?php echo __( 'Low', 'wp-media-webp-converter' ) ?></option>
+                                <option value=""><?php echo esc_html__( '-- Select --', 'wp-media-webp-converter' ); ?></option>    
+                                <option value="100"> <?php echo esc_html__( 'Maximum', 'wp-media-webp-converter' ); ?> </option>
+                                <option value="75"><?php echo esc_html__( 'High', 'wp-media-webp-converter' ) ?></option>
+                                <option value="50"><?php echo esc_html__( 'Optimized (Recommended)', 'wp-media-webp-converter' ) ?></option>
+                                <option value="30"><?php echo esc_html__( 'Low', 'wp-media-webp-converter' ) ?></option>
                             </select>
-                            &nbsp; <span><?php echo __( '<strong>Maximum</strong>: WebP file becomes larger.', 'wp-media-webp-converter' ); ?></span>
+                            &nbsp; <span><?php echo esc_html__( '<strong>Maximum</strong>: WebP file becomes larger.', 'wp-media-webp-converter' ); ?></span>
                         </td>
                     </tr>
                     <tr>
                         <td class="left">
-                            <?php echo __( 'I want to', 'wp-media-webp-converter' ); ?>
+                            <?php echo esc_html__( 'I want to', 'wp-media-webp-converter' ); ?>
                         </td>
                         <td class="option">
                             <select id="conversion_mode" name="conversion_mode">
-                                <option value=""><?php echo __( '-- Select --', 'wp-media-webp-converter' ); ?></option>
-                                <option value="none"><?php echo __( 'Convert Only', 'wp-media-webp-converter' ) ?></option>
-                                <option value="new"> <?php echo __( 'Convert & Create New Attachment', 'wp-media-webp-converter' ); ?> </option>
+                                <option value=""><?php echo esc_html__( '-- Select --', 'wp-media-webp-converter' ); ?></option>
+                                <option value="none"><?php echo esc_html__( 'Convert Only', 'wp-media-webp-converter' ) ?></option>
+                                <option value="new"> <?php echo esc_html__( 'Convert & Create New Attachment', 'wp-media-webp-converter' ); ?> </option>
                             </select>
                         </td>
                     </tr>
@@ -270,11 +273,11 @@ function wpmwc_render_settings_page() { ?>
                         <td class="left">&nbsp;</td>
                         <td class="option">
                             <div>
-                                <?php echo __( '<b>Convert Only</b> <span>converts the image to WebP and stores the newly created file in the same folder. They are not available on the WordPress Media Library; however, they reside inside the folder.</span>' , 'wp-media-webp-converter' ); ?>
+                                <?php echo esc_html__( '<b>Convert Only</b> <span>converts the image to WebP and stores the newly created file in the same folder. They are not available on the WordPress Media Library; however, they reside inside the folder.</span>' , 'wp-media-webp-converter' ); ?>
                             </div>
                             <hr />
                             <div>
-                                <?php echo __( '<b>Convert & Create New Attachment</b> <span>does the same thing, but additionally creates a new media attachment at the same time, only if the same attachment does not already exist. The attachment will become available in the Media Library along with the source file.</span>' , 'wp-media-webp-converter' ); ?>
+                                <?php echo esc_html__( '<b>Convert & Create New Attachment</b> <span>does the same thing, but additionally creates a new media attachment at the same time, only if the same attachment does not already exist. The attachment will become available in the Media Library along with the source file.</span>' , 'wp-media-webp-converter' ); ?>
                             </div>
                         </td>
                     </tr>
@@ -283,7 +286,7 @@ function wpmwc_render_settings_page() { ?>
                         <td>
                             <div>
                                 <button id="wpmwc-start" class="button button-primary">
-                                    <?php echo __( 'Start Conversion', 'wp-media-webp-converter' ); ?>
+                                    <?php echo esc_html__( 'Start Conversion', 'wp-media-webp-converter' ); ?>
                                 </button>
                             </div>
                         </td>
@@ -332,10 +335,13 @@ add_action( 'wp_ajax_wpmwc_get_images', 'wpmwc_get_images' );
 function wpmwc_convert_individual_image() {
     check_ajax_referer( 'wpmwc_nonce', 'nonce' );
 
-    $id             = intval($_POST['id']);
+    if( ! isset( $_POST[ 'id'] ) || empty( $_POST[ 'id' ] ) ) return;
+    if( ! is_numeric( $_POST[ 'id'] ) ) return;
+
+    $id             = intval( $_POST['id'] );
     $overwrite      = isset( $_POST[ 'overwrite' ] ) ? (bool)$_POST[ 'overwrite' ] : false;
-    $quality        = isset( $_POST[ 'image_quality' ] ) ? intval( $_POST[ 'image_quality' ] ) : 100;
-    $action_mode    = isset( $_POST[ 'conversion_mode' ] ) ? $_POST[ 'conversion_mode' ] : 'none';
+    $quality        = isset( $_POST[ 'image_quality' ] ) ?  sanitize_text_field( wp_unslash( intval( $_POST[ 'image_quality' ] ) ) ) : 100;
+    $action_mode    = isset( $_POST[ 'conversion_mode' ] ) ? sanitize_text_field( wp_unslash( $_POST[ 'conversion_mode' ] ) ) : 'none';
     $file           = get_attached_file( $id );
     $info           = pathinfo( $file );
 

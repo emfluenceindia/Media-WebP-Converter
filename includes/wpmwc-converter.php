@@ -57,8 +57,6 @@ function wpmwc_convert_jpeg_to_webp( $source_file_path, $thumb_files, $overwrite
     );
 
     $output = json_encode( $summary );
-
-    echo $output;
 }
 
 /**
@@ -115,8 +113,6 @@ function wpmwc_convert_png_to_webp( $source_file_path, $thumb_files, $overwrite,
 
     // $output = json_encode( $summary, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES );
     $output = json_encode( $summary );
-
-    echo $output;
 }
 
 /**
@@ -172,8 +168,6 @@ function wpmwc_convert_gif_to_webp( $source_file_path, $thumb_files, $overwrite,
     );
 
     $output = json_encode( $summary );
-
-    echo $output;
 }
 
 /**
