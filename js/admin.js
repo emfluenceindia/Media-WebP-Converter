@@ -2,9 +2,9 @@
  * Version: 1.4
  */
 jQuery(document).ready( function( $ ) {
-    $( "#wpmwc-start" ).on( 'click', function( e ){
+    $( "#mwc-start" ).on( 'click', function( e ){
         e.preventDefault();
-        $( "#wpmwc-progress-log" ).html('');
+        $( "#mwc-progress-log" ).html('');
 
         const image_quality = $( "#image_quality" );
         const action_mode   = $( "#conversion_mode" );
@@ -20,14 +20,14 @@ jQuery(document).ready( function( $ ) {
             return false;
         }
 
-        $( "#wpmwc-progress-wrapper" ).show();
-        $( "#wpmwc-progress-status" ).text('Starting...');
+        $( "#mwc-progress-wrapper" ).show();
+        $( "#mwc-progress-status" ).text('Starting...');
         
         let index = 0;
         
-        $.post( WPMWC.ajax_url, {
-            action: 'wpmwc_get_images',
-            nonce: WPMWC.nonce
+        $.post( MWC.ajax_url, {
+            action: 'mwc_get_images',
+            nonce: MWC.nonce
         }, function( res ) {
             if( !res.success ) {
                 console.log( 'Could not load images' );
@@ -42,16 +42,16 @@ jQuery(document).ready( function( $ ) {
             // Recursive
             function convertNext() {
                 if( index >= total ) {
-                    $( "#wpmwc-progress-status" ).text( '✅ Conversion process completed successfully.' );
+                    $( "#mwc-progress-status" ).text( '✅ Conversion process completed successfully.' );
                     return;
                 }
 
                 const current_id = ids[index];
-                $( "#wpmwc-progress-status" ).text( `Converting ${index + 1} of ${total}` );
+                $( "#mwc-progress-status" ).text( `Converting ${index + 1} of ${total}` );
 
-                $.post( WPMWC.ajax_url, {
-                    action: 'wpmwc_convert_individual_image',
-                    nonce: WPMWC.nonce,
+                $.post( MWC.ajax_url, {
+                    action: 'mwc_convert_individual_image',
+                    nonce: MWC.nonce,
                     id: current_id,
                     overwrite: overwrite,
                     image_quality: $( image_quality ).val(),
@@ -65,12 +65,12 @@ jQuery(document).ready( function( $ ) {
                     }
                     // const logMessage = res.status === "Success" ? `✔ ID ${current_id}: ${res.data}` : `✖ ID ${current_id}: ${res.data || 'Error'}`;
                     // const logMessage = res.success ? `✔ ID ${current_id}: ${res.data}` : `✖ ID ${current_id}: ${res.data || 'Error'}`;
-                    // $( "#wpmwc-progress-log" ).append( '<div>' + logMessage + '</div>' );
+                    // $( "#mwc-progress-log" ).append( '<div>' + logMessage + '</div>' );
 
                     index++;
                     const percent = Math.round( ( index / total )  * 100 );
-                    $( "#wpmwc-progress-inner" ).css( 'width', percent + '%' );
-                    $( "#wpmwc-progress-status" ).text( `${percent}% complete` );
+                    $( "#mwc-progress-inner" ).css( 'width', percent + '%' );
+                    $( "#mwc-progress-status" ).text( `${percent}% complete` );
 
                     // Recusively call the function to convert the next available image
                     convertNext();

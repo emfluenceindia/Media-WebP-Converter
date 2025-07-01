@@ -1,7 +1,7 @@
 /**
 Version: 1.0.3
 */
-#wpmwc-progress-bar {
+#mwc-progress-bar {
     width: 100%;
     background: #eee;
     border: 1px solid #ccc;
@@ -10,7 +10,7 @@ Version: 1.0.3
     box-sizing: border-box;
 }
 
-#wpmwc-progress-inner {
+#mwc-progress-inner {
     width: 0%;
     height: 100%;
     background: #35cf21;
@@ -18,56 +18,56 @@ Version: 1.0.3
 }
 
 /** Plugin settings page table classes */
-.wpmwc-table-default {
+.mwc-table-default {
     width: 50%;
     margin: 15px 0 25px 0;
 }
 
-.wpmwc-table-default th {
+.mwc-table-default th {
     background: #708060;
     color: #ffffff;
     padding: 8px;
 }
 
-.wpmwc-table-default th.left {
+.mwc-table-default th.left {
     border-right: 1px solid #fafafe
 }
 
-.wpmwc-table-default td {
+.mwc-table-default td {
     background: #fafafe;
     padding: 8px;
     border-bottom: 1px solid #708060;
     border-right: 1px solid #708060;
 }
 
-.wpmwc-table-default td.left {
+.mwc-table-default td.left {
     border-left: 1px solid #708060;
 }
 
-.wpmwc-form-default {
+.mwc-form-default {
     margin-top: 25px;
 }
 
 /** Action table */
-.wpmwc-action-table {
+.mwc-action-table {
     width: 50%;
     border: 0;
 }
 
-.wpmwc-action-table td {
+.mwc-action-table td {
     padding: 6px;
 }
 
-.wpmwc-action-table td.left {
+.mwc-action-table td.left {
     text-align: right;
     padding-left:5px;
 }
 
-.wpmwc-action-table td.option {
+.mwc-action-table td.option {
     width: 80%;
 }
 
-.wpmwc-action-table td.option span {
+.mwc-action-table td.option span {
     color: gray;
 }
 

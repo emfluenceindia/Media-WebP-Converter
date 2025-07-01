@@ -1,10 +1,9 @@
 <?php
 /**
  * Include file
- * File name: wpmwc-converter.php
- * File path: wp-media-webp-converter/includes
- * Version: 1.1
- * Included in: wp-media-webp-converter/wp-media-webp-converter.php
+ * File name: mwc-converter.php
+ * File path: media-webp-converter/includes
+ * Version: 1.0
  * Purpose: Separate file to store converter functions to keep the main plugin file clean and concise
  */
 
@@ -13,7 +12,7 @@
  * @param array $thumb_files. The string array of file paths.
  * @param bool $overwrite. Decides whether or not to overwrite any existing WebP file
  */
-function wpmwc_convert_jpeg_to_webp( $source_file_path, $thumb_files, $overwrite, $quality, $action_mode ) {
+function mwc_convert_jpeg_to_webp( $source_file_path, $thumb_files, $overwrite, $quality, $action_mode ) {
     if( ! function_exists( 'imagewebp' ) ) {
         wp_send_json_error( 'WebP is not supported' );
     }
@@ -43,7 +42,7 @@ function wpmwc_convert_jpeg_to_webp( $source_file_path, $thumb_files, $overwrite
     }
 
     if( $action_mode === 'new' ) { // Create new attachment and metadata for newly created WebP
-        wpmwc_create_new_attachment( $source_file_path );
+        mwc_create_new_attachment( $source_file_path );
     }
 
     $summary = array(
@@ -64,7 +63,7 @@ function wpmwc_convert_jpeg_to_webp( $source_file_path, $thumb_files, $overwrite
  * @param array $thumb_files. The string array of file paths.
  * @param bool $overwrite. Decides whether or not to overwrite any existing WebP file
  */
-function wpmwc_convert_png_to_webp( $source_file_path, $thumb_files, $overwrite, $quality, $action_mode ) {
+function mwc_convert_png_to_webp( $source_file_path, $thumb_files, $overwrite, $quality, $action_mode ) {
     if( ! function_exists('imagewebp' ) ) {
         wp_send_json_error( 'WebP is not supported' );
     }
@@ -98,7 +97,7 @@ function wpmwc_convert_png_to_webp( $source_file_path, $thumb_files, $overwrite,
     }
 
     if( $action_mode === 'new' ) { // Create new attachment and metadata for newly created WebP
-        wpmwc_create_new_attachment( $source_file_path );
+        mwc_create_new_attachment( $source_file_path );
     }
 
     $summary = array(
@@ -120,7 +119,7 @@ function wpmwc_convert_png_to_webp( $source_file_path, $thumb_files, $overwrite,
  * @param array $thumb_files. The string array of file paths.
  * @param bool $overwrite. Decides whether or not to overwrite any existing WebP file
  */
-function wpmwc_convert_gif_to_webp( $source_file_path, $thumb_files, $overwrite, $quality, $action_mode ) {
+function mwc_convert_gif_to_webp( $source_file_path, $thumb_files, $overwrite, $quality, $action_mode ) {
     if( ! function_exists('imagewebp' ) ) {
         wp_send_json_error( 'WebP is not supported' );
     }
@@ -154,7 +153,7 @@ function wpmwc_convert_gif_to_webp( $source_file_path, $thumb_files, $overwrite,
     }
 
     if( $action_mode === 'new' ) { // Create new attachment and metadata for newly created WebP
-        wpmwc_create_new_attachment( $source_file_path );
+        mwc_create_new_attachment( $source_file_path );
     }
 
     $summary = array(
@@ -174,7 +173,7 @@ function wpmwc_convert_gif_to_webp( $source_file_path, $thumb_files, $overwrite,
  * Creates a new attachment
  * @param string $source_file_path. The full path of the original attachment file
  */
-function wpmwc_create_new_attachment( $source_file_path ) {
+function mwc_create_new_attachment( $source_file_path ) {
     $path_info      = pathinfo( $source_file_path );
     $webp_filename  = $path_info[ 'filename' ] . '.webp';
     $webp_url       = wp_upload_dir()['url'] . '/' . $webp_filename; // URL
@@ -188,7 +187,7 @@ function wpmwc_create_new_attachment( $source_file_path ) {
         'post_status'    => 'inherit'
     );
 
-    $existing_attachment_id = wpmwc_check_if_attachment_already_exists( $webp_url );
+    $existing_attachment_id = mwc_check_if_attachment_already_exists( $webp_url );
     
     /**
      * Create a new attachment only if $existing_attachment_id = false.
@@ -221,7 +220,7 @@ function wpmwc_create_new_attachment( $source_file_path ) {
  * @param string $filename. The name of the WebP file to check.
  * @return int|bool. Returns attachment_id if exists, false otherwise.
  */
-function wpmwc_check_if_attachment_already_exists( $filename ) {
+function mwc_check_if_attachment_already_exists( $filename ) {
     $filename = basename( $filename );
 
     $att_args = array(
