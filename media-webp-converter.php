@@ -5,7 +5,7 @@
  * Version: 1.0.0
  * Author: Subrata Sarkar
  * Author URI: https://github.com/emfluenceindia
- * Plugin Github URI: https://github.com/emfluenceindia/media-webp-converter
+ * Public Github URI: https://github.com/emfluenceindia/media-webp-converter
  * License: GPL-2.0+
  * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain: media-webp-converter
