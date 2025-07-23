@@ -198,13 +198,13 @@ function mwc_display_image_counts_by_mime_type() {
                 <tr>
                     <td class="left">
                         <?php 
-                            if( "image/jpeg" === strtolower( $type ) ) $type =  wp_kses_post( 'JPEG/JPG', 'media-webp-converter' );
-                            if( "image/png" === strtolower( $type ) ) $type = wp_kses_post( 'PNG', 'media-webp-converter' );
-                            if( "image/gif" === strtolower( $type ) ) $type = wp_kses_post( 'GIF (Non-animated only', 'media-webp-converter' );
-                            echo $type;
+                            if( "image/jpeg" === strtolower( $type ) ) $type =  __( 'JPEG/JPG', 'media-webp-converter' );
+                            if( "image/png" === strtolower( $type ) ) $type = __( 'PNG', 'media-webp-converter' );
+                            if( "image/gif" === strtolower( $type ) ) $type = __( 'GIF (Non-animated only)', 'media-webp-converter' );
+                            echo esc_html( $type );
                         ?>
                     </td>
-                    <td><?php echo number_format_i18n( $count ); ?> files</td>
+                    <td><?php echo esc_html( number_format_i18n( $count ) ); ?> files</td>
                 </tr>
             <?php } ?>
         </table>
