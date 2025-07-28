@@ -25,9 +25,9 @@ function media_webp_converter_enqueue_scripts() {
     // enqueue the script
     wp_enqueue_script( 
         'media_webp_converter_admin-script', // ID
-        plugin_dir_url( __FILE__ ) . 'js/admin.js',  // script source
+        plugin_dir_url( __FILE__ ) . 'assets/admin.min.js',  // script source
         ['jquery'], // dependency
-        filemtime( plugin_dir_path( __FILE__ ) . 'js/admin.js' ), // version
+        filemtime( plugin_dir_path( __FILE__ ) . 'assets/admin.min.js' ), // version
         true //
     );
 
@@ -40,9 +40,9 @@ function media_webp_converter_enqueue_scripts() {
     // enqueue CSS
     wp_enqueue_style( 
         'media_webp_converter_admin-style', 
-        plugin_dir_url( __FILE__ ) . 'css/admin.css',
+        plugin_dir_url( __FILE__ ) . 'assets/admin.min.css',
         [], 
-        filemtime( plugin_dir_path( __FILE__ ) . 'css/admin.css' ) 
+        filemtime( plugin_dir_path( __FILE__ ) . 'assets/admin.min.css' ) 
     );
 }
 
