@@ -12,7 +12,7 @@
  * @param array $thumb_files. The string array of file paths.
  * @param bool $overwrite. Decides whether or not to overwrite any existing WebP file
  */
-function mwc_convert_jpeg_to_webp( $source_file_path, $thumb_files, $overwrite, $quality, $action_mode ) {
+function media_webp_converter_convert_jpeg_to_webp( $source_file_path, $thumb_files, $overwrite, $quality, $action_mode ) {
     if( ! function_exists( 'imagewebp' ) ) {
         wp_send_json_error( 'WebP is not supported' );
     }
@@ -42,7 +42,7 @@ function mwc_convert_jpeg_to_webp( $source_file_path, $thumb_files, $overwrite, 
     }
 
     if( $action_mode === 'new' ) { // Create new attachment and metadata for newly created WebP
-        mwc_create_new_attachment( $source_file_path );
+        media_webp_converter_create_new_attachment( $source_file_path );
     }
 
     $summary = array(
@@ -63,7 +63,7 @@ function mwc_convert_jpeg_to_webp( $source_file_path, $thumb_files, $overwrite, 
  * @param array $thumb_files. The string array of file paths.
  * @param bool $overwrite. Decides whether or not to overwrite any existing WebP file
  */
-function mwc_convert_png_to_webp( $source_file_path, $thumb_files, $overwrite, $quality, $action_mode ) {
+function media_webp_converter_convert_png_to_webp( $source_file_path, $thumb_files, $overwrite, $quality, $action_mode ) {
     if( ! function_exists('imagewebp' ) ) {
         wp_send_json_error( 'WebP is not supported' );
     }
@@ -97,7 +97,7 @@ function mwc_convert_png_to_webp( $source_file_path, $thumb_files, $overwrite, $
     }
 
     if( $action_mode === 'new' ) { // Create new attachment and metadata for newly created WebP
-        mwc_create_new_attachment( $source_file_path );
+        media_webp_converter_create_new_attachment( $source_file_path );
     }
 
     $summary = array(
@@ -119,7 +119,7 @@ function mwc_convert_png_to_webp( $source_file_path, $thumb_files, $overwrite, $
  * @param array $thumb_files. The string array of file paths.
  * @param bool $overwrite. Decides whether or not to overwrite any existing WebP file
  */
-function mwc_convert_gif_to_webp( $source_file_path, $thumb_files, $overwrite, $quality, $action_mode ) {
+function media_webp_converter_convert_gif_to_webp( $source_file_path, $thumb_files, $overwrite, $quality, $action_mode ) {
     if( ! function_exists('imagewebp' ) ) {
         wp_send_json_error( 'WebP is not supported' );
     }
@@ -153,7 +153,7 @@ function mwc_convert_gif_to_webp( $source_file_path, $thumb_files, $overwrite, $
     }
 
     if( $action_mode === 'new' ) { // Create new attachment and metadata for newly created WebP
-        mwc_create_new_attachment( $source_file_path );
+        media_webp_converter_create_new_attachment( $source_file_path );
     }
 
     $summary = array(
@@ -173,7 +173,7 @@ function mwc_convert_gif_to_webp( $source_file_path, $thumb_files, $overwrite, $
  * Creates a new attachment
  * @param string $source_file_path. The full path of the original attachment file
  */
-function mwc_create_new_attachment( $source_file_path ) {
+function media_webp_converter_create_new_attachment( $source_file_path ) {
     $path_info      = pathinfo( $source_file_path );
     $webp_filename  = $path_info[ 'filename' ] . '.webp';
     $webp_url       = wp_upload_dir()['url'] . '/' . $webp_filename; // URL
@@ -187,7 +187,7 @@ function mwc_create_new_attachment( $source_file_path ) {
         'post_status'    => 'inherit'
     );
 
-    $existing_attachment_id = mwc_check_if_attachment_already_exists( $webp_url );
+    $existing_attachment_id = media_webp_converter_check_if_attachment_already_exists( $webp_url );
     
     /**
      * Create a new attachment only if $existing_attachment_id = false.
@@ -220,7 +220,7 @@ function mwc_create_new_attachment( $source_file_path ) {
  * @param string $filename. The name of the WebP file to check.
  * @return int|bool. Returns attachment_id if exists, false otherwise.
  */
-function mwc_check_if_attachment_already_exists( $filename ) {
+function media_webp_converter_check_if_attachment_already_exists( $filename ) {
     $filename = basename( $filename );
 
     $att_args = array(

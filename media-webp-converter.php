@@ -9,7 +9,7 @@
  * License: GPL-2.0+
  * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain: media-webp-converter
- * Method Prefix: mwc_
+ * Method Prefix: media_webp_converter_
  */
 
 defined('ABSPATH') || exit;
@@ -21,10 +21,10 @@ if( is_admin() ) {
 /**
  * Enqueue admin scripts
  */
-function mwc_enqueue_scripts() {
+function media_webp_converter_enqueue_scripts() {
     // enqueue the script
     wp_enqueue_script( 
-        'mwc-admin-script', // ID
+        'media_webp_converter_admin-script', // ID
         plugin_dir_url( __FILE__ ) . 'js/admin.js',  // script source
         ['jquery'], // dependency
         filemtime( plugin_dir_path( __FILE__ ) . 'js/admin.js' ), // version
@@ -32,36 +32,36 @@ function mwc_enqueue_scripts() {
     );
 
     //script localization
-    wp_localize_script( 'mwc-admin-script', 'MWC', [
+    wp_localize_script( 'media_webp_converter_admin-script', 'MWCNV', [
         'ajax_url' => admin_url( 'admin-ajax.php' ),
-        'nonce'    => wp_create_nonce( 'mwc_nonce' )
+        'nonce'    => wp_create_nonce( 'media_webp_converter_nonce' )
     ] );
 
     // enqueue CSS
     wp_enqueue_style( 
-        'mwc-admin-style', 
+        'media_webp_converter_admin-style', 
         plugin_dir_url( __FILE__ ) . 'css/admin.css',
         [], 
         filemtime( plugin_dir_path( __FILE__ ) . 'css/admin.css' ) 
     );
 }
 
-add_action( 'admin_enqueue_scripts', 'mwc_enqueue_scripts' );
+add_action( 'admin_enqueue_scripts', 'media_webp_converter_enqueue_scripts' );
 
 /**
  * Add a plugin management / settigns page in the admin
  */
-function mwc_add_management_page() {
+function media_webp_converter_add_management_page() {
     add_options_page(
         __( 'Convert to WebP', 'media-webp-converter' ),    // Page title
         __( 'Media WebP Converter', 'media-webp-converter' ),    // Menu title
         'manage_options',                                      // Capability
-        'mwc-convert-to-webp',                                 // Menu slug
-        'mwc_render_settings_page'   // Callback function to render the page
+        'media-webp-converter-settings',                                 // Menu slug
+        'media_webp_converter_render_settings_page'   // Callback function to render the page
     );
 }
 
-add_action( 'admin_menu', 'mwc_add_management_page' );
+add_action( 'admin_menu', 'media_webp_converter_add_management_page' );
 
 /**
  * Add a Settings link (plugin action link) under the plugin name on main plugin page
@@ -69,9 +69,9 @@ add_action( 'admin_menu', 'mwc_add_management_page' );
  * @param  array $links An array of plugin action links
  * @return array An updated array of plugin action links
  */
-function mwc_add_plugin_settings_links( $links ) {
+function media_webp_converter_add_plugin_settings_links( $links ) {
     // Build the URL
-    $settings_url = admin_url( 'options-general.php?page=mwc-convert-to-webp' );
+    $settings_url = admin_url( 'options-general.php?page=media-webp-converter-settings' );
 
     // Create the HTML for the link
     $settings_link = '<a href="' . esc_url( $settings_url ) . '">' . __( 'Settings', 'media-webp-converter' ) . '</a>';
@@ -83,7 +83,7 @@ function mwc_add_plugin_settings_links( $links ) {
     return $links;
 }
 
-add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'mwc_add_plugin_settings_links' );
+add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'media_webp_converter_add_plugin_settings_links' );
 
 /**
   * WordPress does not automatically remove non-standard files like .webp.
@@ -91,7 +91,7 @@ add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'mwc_add_plugi
   * physically from the disk whenever an attachment media is deleted from the media library
  */
 
- function mwc_delete_file_from_disk( $attachment_id ) {
+ function media_webp_converter_delete_file_from_disk( $attachment_id ) {
     $file_path = get_attached_file( $attachment_id );
 
     // Physical file absent
@@ -114,26 +114,26 @@ add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'mwc_add_plugi
          */
 
         $webp_main = $basedir . '/' . $basename . '.' . $extension;
-        mwc_jump_delete_webp_file( $attachment_id, $basedir, $webp_main );
+        media_webp_converter_jump_delete_webp_file( $attachment_id, $basedir, $webp_main );
     } else {
         // First we remove the main .webp version (same name having .webp extension)
         $webp_main = $basedir . '/' . $basename . '.webp'; // get the physical path on disk
 
         // Check if this .webp is a separate attachment already
-        $webp_attachment_id = mwc_check_if_attachment_already_exists( $webp_url );
+        $webp_attachment_id = media_webp_converter_check_if_attachment_already_exists( $webp_url );
 
         if( $webp_attachment_id > 0 ) return; // This is an attachment. Do not delete
 
-        mwc_jump_delete_webp_file( $attachment_id, $basedir, $webp_main ); 
+        media_webp_converter_jump_delete_webp_file( $attachment_id, $basedir, $webp_main ); 
     }
  }
 
- add_action( 'delete_attachment', 'mwc_delete_file_from_disk' );
+ add_action( 'delete_attachment', 'media_webp_converter_delete_file_from_disk' );
 
  /**
   * Remove webp files from the disk on attachment removal
   */
-  function mwc_jump_delete_webp_file( $attachment_id, $basedir, $webp_physical_path ) {
+  function media_webp_converter_jump_delete_webp_file( $attachment_id, $basedir, $webp_physical_path ) {
     $meta = wp_get_attachment_metadata( $attachment_id );
 
     if( ! empty( $meta[ 'sizes' ] ) ) {
@@ -153,7 +153,7 @@ add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'mwc_add_plugi
 /**
  * Fetch and count image files by MIME types
  */
-function mwc_count_images_by_mime_types() {
+function media_webp_converter_count_images_by_mime_types() {
     global $wpdb;
 
     $mime_types = array(
@@ -182,8 +182,8 @@ function mwc_count_images_by_mime_types() {
 /**
  * Display image counts by MIME types
  */
-function mwc_display_image_counts_by_mime_type() {
-    $counts = mwc_count_images_by_mime_types(); ?>
+function media_webp_converter_display_image_counts_by_mime_type() {
+    $counts = media_webp_converter_count_images_by_mime_types(); ?>
     <div class="wrap">
         <?php 
             $image_sizes = get_intermediate_image_sizes();
@@ -216,12 +216,12 @@ function mwc_display_image_counts_by_mime_type() {
  * Management page callback funciton body
  */
 
-function mwc_render_settings_page() { ?>
+function media_webp_converter_render_settings_page() { ?>
     <div class="wrap">
         <h1><?php echo wp_kses_post( 'Convert images in Media Library to WebP in Bulk', 'media-webp-converter' ); ?></h1>
         <hr />
         <p><?php echo wp_kses_post( 'Convert JPEG, PNG and GIF images in WebP format in bulk. You can choose <strong>Image Quality</strong> and/or <strong>Create New Attachment</strong> while converting.', 'media-webp-converter' ); ?></p>
-        <?php mwc_display_image_counts_by_mime_type(); ?>
+        <?php media_webp_converter_display_image_counts_by_mime_type(); ?>
         <form method="post" class="mwc-form-default">
             <div style="margin-top: 10px;">
                 <table class="mwc-action-table" cellspacing="0" cellpadding="0">
@@ -312,8 +312,8 @@ function mwc_render_settings_page() { ?>
 /**
  * AJAX: Get the image ID
  */
-function mwc_get_images() {
-    check_ajax_referer( 'mwc_nonce', 'nonce' );
+function media_webp_converter_get_images() {
+    check_ajax_referer( 'media_webp_converter_nonce', 'nonce' );
 
     $attachments = get_posts(
         array(
@@ -327,13 +327,13 @@ function mwc_get_images() {
     wp_send_json_success( $attachments );
 }
 
-add_action( 'wp_ajax_mwc_get_images', 'mwc_get_images' );
+add_action( 'wp_ajax_media_webp_converter_get_images', 'media_webp_converter_get_images' );
 
 /**
  * AJAX: Convert individual image to WebP
  */
-function mwc_convert_individual_image() {
-    check_ajax_referer( 'mwc_nonce', 'nonce' );
+function media_webp_converter_convert_individual_image() {
+    check_ajax_referer( 'media_webp_converter_nonce', 'nonce' );
 
     if( ! isset( $_POST[ 'id'] ) || empty( $_POST[ 'id' ] ) ) return;
     if( ! is_numeric( $_POST[ 'id'] ) ) return;
@@ -359,20 +359,20 @@ function mwc_convert_individual_image() {
     $mime_type =  trim( strtolower( $file_info[ 'mime' ] ) );
 
     if( $mime_type === 'image/jpeg' ) {
-        mwc_convert_jpeg_to_webp( $file, $thumb_files, $overwrite, $quality, $action_mode );
+        media_webp_converter_convert_jpeg_to_webp( $file, $thumb_files, $overwrite, $quality, $action_mode );
     } else if( $mime_type === 'image/png') {
-        mwc_convert_png_to_webp( $file, $thumb_files, $overwrite, $quality, $action_mode );
+        media_webp_converter_convert_png_to_webp( $file, $thumb_files, $overwrite, $quality, $action_mode );
     } else if( $mime_type === 'image/gif' ) {
-        mwc_convert_gif_to_webp( $file, $thumb_files, $overwrite, $quality, $action_mode );
+        media_webp_converter_convert_gif_to_webp( $file, $thumb_files, $overwrite, $quality, $action_mode );
     }
 }
 
-add_action( 'wp_ajax_mwc_convert_individual_image', 'mwc_convert_individual_image' );
+add_action( 'wp_ajax_media_webp_converter_convert_individual_image', 'media_webp_converter_convert_individual_image' );
 
 /**
  * Media Library: Convert indivdual image
  */
-function mwc_create_local_convert_action_link( $actions, $post ) {
+function media_webp_converter_create_local_convert_action_link( $actions, $post ) {
     $link_html = '<a href="javascript: void(0);" class="mwc-convert-single" data-id="' . $post->ID . '">' . __( 'Convert to WebP', 'media-webp-converter' ) . '</a>';
     if( in_array( get_post_mime_type( $post ), [ 'image/jpeg', 'image/png' ] ) ) {
         $actions[ 'convert_webp' ] = $link_html;
@@ -381,10 +381,10 @@ function mwc_create_local_convert_action_link( $actions, $post ) {
     return $actions;
 }
 
-add_filter( 'media_row_action', 'mwc_create_local_convert_action_link', 10, 2 );
+add_filter( 'media_row_action', 'media_webp_converter_create_local_convert_action_link', 10, 2 );
  
 
-function mwc_generate_attachment_metadata( $metadata, $attachment_id ) {
+function media_webp_converter_generate_attachment_metadata( $metadata, $attachment_id ) {
     $mime = get_post_mime_type( $attachment_id );
     if( ! in_array( $mime, [ 'image/jpeg', 'image/png' ] ) ) return $metadata;
 
@@ -417,4 +417,4 @@ function mwc_generate_attachment_metadata( $metadata, $attachment_id ) {
     return $metadata;
 }
 
-add_filter( 'wp_generate_attachment_metadata', 'mwc_generate_attachment_metadata', 10, 2 );
+add_filter( 'wp_generate_attachment_metadata', 'media_webp_converter_generate_attachment_metadata', 10, 2 );

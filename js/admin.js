@@ -25,16 +25,14 @@ jQuery(document).ready( function( $ ) {
         
         let index = 0;
         
-        $.post( MWC.ajax_url, {
-            action: 'mwc_get_images',
-            nonce: MWC.nonce
+        $.post( MWCNV.ajax_url, {
+            action: 'media_webp_converter_get_images',
+            nonce: MWCNV.nonce
         }, function( res ) {
             if( !res.success ) {
                 console.log( 'Could not load images' );
                 return;
             }
-
-            console.log( res.data );
 
             const ids   = res.data;
             const total = ids.length;
@@ -49,9 +47,9 @@ jQuery(document).ready( function( $ ) {
                 const current_id = ids[index];
                 $( "#mwc-progress-status" ).text( `Converting ${index + 1} of ${total}` );
 
-                $.post( MWC.ajax_url, {
-                    action: 'mwc_convert_individual_image',
-                    nonce: MWC.nonce,
+                $.post( MWCNV.ajax_url, {
+                    action: 'media_webp_converter_convert_individual_image',
+                    nonce: MWCNV.nonce,
                     id: current_id,
                     overwrite: overwrite,
                     image_quality: $( image_quality ).val(),
