@@ -15,7 +15,7 @@
 defined('ABSPATH') || exit;
 
 if( is_admin() ) {
-    require_once 'includes/mwc-converter.php';
+    require_once 'includes/media-webp-converter-actions.php';
 }
 
 /**

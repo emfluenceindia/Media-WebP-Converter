@@ -1,7 +1,7 @@
 <?php
 /**
  * Include file
- * File name: mwc-converter.php
+ * File name: media-webp-converter-actions.php
  * File path: media-webp-converter/includes
  * Version: 1.0
  * Purpose: Separate file to store converter functions to keep the main plugin file clean and concise
