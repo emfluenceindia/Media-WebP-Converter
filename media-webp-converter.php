@@ -188,11 +188,11 @@ function media_webp_converter_display_image_counts_by_mime_type() {
         <?php 
             $image_sizes = get_intermediate_image_sizes();
         ?>
-        <h2><?php echo wp_kses_post( 'Image count by File types', 'media-webp-converter' ) ?></h2>
+        <h2><?php echo wp_kses_post( __( 'Image count by File types', 'media-webp-converter' ) ); ?></h2>
         <table class="mwc-table-default" style="width: 50%;margin: 0;"  cellspacing=0 cellpadding=0>
             <tr>
-                <th class="left"><?php echo wp_kses_post( 'MIME Type', 'media-webp-converter' ) ?></th>
-                <th><?php echo wp_kses_post( 'Image count', 'media-webp-converter' ) ?></th>
+                <th class="left"><?php echo wp_kses_post( __( 'MIME Type', 'media-webp-converter' ) ); ?></th>
+                <th><?php echo wp_kses_post( __( 'Image count', 'media-webp-converter' ) ); ?></th>
             </tr>
             <?php foreach( $counts as $type => $count ) { ?>
                 <tr>
@@ -218,9 +218,9 @@ function media_webp_converter_display_image_counts_by_mime_type() {
 
 function media_webp_converter_render_settings_page() { ?>
     <div class="wrap">
-        <h1><?php echo wp_kses_post( 'Convert images in Media Library to WebP in Bulk', 'media-webp-converter' ); ?></h1>
+        <h1><?php echo wp_kses_post( __( 'Convert images in Media Library to WebP in Bulk', 'media-webp-converter' ) ); ?></h1>
         <hr />
-        <p><?php echo wp_kses_post( 'Convert JPEG, PNG and GIF images in WebP format in bulk. You can choose <strong>Image Quality</strong> and/or <strong>Create New Attachment</strong> while converting.', 'media-webp-converter' ); ?></p>
+        <p><?php echo wp_kses_post( __( 'Convert JPEG, PNG and GIF images in WebP format in bulk. You can choose <strong>Image Quality</strong> and/or <strong>Create New Attachment</strong> while converting.', 'media-webp-converter' ) ); ?></p>
         <?php media_webp_converter_display_image_counts_by_mime_type(); ?>
         <form method="post" class="mwc-form-default">
             <div style="margin-top: 10px;">
@@ -232,19 +232,19 @@ function media_webp_converter_render_settings_page() { ?>
                         <td class="option">
                             <input type="checkbox" id="overwrite" name="overwrite" value="1" checked disabled />
                             <label for="overwrite">
-                                <?php echo wp_kses_post( 'Overwrite existing WebP files', 'media-webp-converter' ); ?>
+                                <?php echo wp_kses_post( __( 'Overwrite existing WebP files', 'media-webp-converter' ) ); ?>
                             </label>
                         </td>
                     </tr>
                     <tr>
                         <td class="left">&nbsp;</td>
                         <td>
-                            <span><?php echo wp_kses_post( 'When <strong>Overwrite</strong> and <strong>Convert & Create New Attachment</strong> options are selected at the same time, a New Attachment will only be created if it doesn\'t exist already.', 'media-webp-converter' ); ?></span>
+                            <span><?php echo wp_kses_post( __( 'When <strong>Overwrite</strong> and <strong>Convert & Create New Attachment</strong> options are selected at the same time, a New Attachment will only be created if it doesn\'t exist already.', 'media-webp-converter' ) ); ?></span>
                         </td>
                     </tr>
                     <tr>
                         <td class="left">
-                            <?php echo wp_kses_post( 'Image quality ', 'media-webp-converter' ); ?>
+                            <?php echo wp_kses_post( __( 'Image quality ', 'media-webp-converter' ) ); ?>
                         </td>
                         <td class="option">
                             <select id="image_quality" name="image_quality">
@@ -254,12 +254,12 @@ function media_webp_converter_render_settings_page() { ?>
                                 <option value="50"><?php echo esc_html__( 'Optimized (Recommended)', 'media-webp-converter' ) ?></option>
                                 <option value="30"><?php echo esc_html__( 'Low', 'media-webp-converter' ) ?></option>
                             </select>
-                            &nbsp; <span><?php echo wp_kses_post( '<strong>Maximum</strong>: WebP file becomes larger.', 'media-webp-converter' ); ?></span>
+                            &nbsp; <span><?php echo wp_kses_post( __( '<strong>Maximum</strong>: WebP file becomes larger.', 'media-webp-converter' ) ); ?></span>
                         </td>
                     </tr>
                     <tr>
                         <td class="left">
-                            <?php echo wp_kses_post( 'I want to', 'media-webp-converter' ); ?>
+                            <?php echo wp_kses_post( __( 'I want to', 'media-webp-converter' ) ); ?>
                         </td>
                         <td class="option">
                             <select id="conversion_mode" name="conversion_mode">
@@ -273,11 +273,11 @@ function media_webp_converter_render_settings_page() { ?>
                         <td class="left">&nbsp;</td>
                         <td class="option">
                             <div>
-                                <?php echo wp_kses_post( '<b>Convert Only</b> <span>converts the image to WebP and stores the newly created file in the same folder. They are not available on the WordPress Media Library; however, they reside inside the folder.</span>' , 'media-webp-converter' ); ?>
+                                <?php echo wp_kses_post( __( '<b>Convert Only</b> <span>converts the image to WebP and stores the newly created file in the same folder. They are not available on the WordPress Media Library; however, they reside inside the folder.</span>' , 'media-webp-converter' ) ); ?>
                             </div>
                             <hr />
                             <div>
-                                <?php echo wp_kses_post( '<b>Convert & Create New Attachment</b> <span>does the same thing, but additionally creates a new media attachment at the same time, only if the same attachment does not already exist. The attachment will become available in the Media Library along with the source file.</span>' , 'media-webp-converter' ); ?>
+                                <?php echo wp_kses_post( __( '<b>Convert & Create New Attachment</b> <span>does the same thing, but additionally creates a new media attachment at the same time, only if the same attachment does not already exist. The attachment will become available in the Media Library along with the source file.</span>' , 'media-webp-converter' ) ); ?>
                             </div>
                         </td>
                     </tr>
